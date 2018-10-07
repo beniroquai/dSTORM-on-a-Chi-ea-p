@@ -259,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    publishMessage("stepper/lens/x/fwd", "10");
+                    publishMessage("stepper/lens/x/fwd", "3");
                 }
                 return true;
             }
@@ -268,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    publishMessage("stepper/lens/x/bwd", "1");
+                    publishMessage("stepper/lens/x/bwd", "3");
                 }
                 return true;
             }
@@ -277,7 +277,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    publishMessage("stepper/lens/y/fwd", "10");
+                    publishMessage("stepper/lens/y/fwd", "3");
                 }
                 return true;
             }
@@ -286,7 +286,8 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    publishMessage("stepper/lens/y/bwd", "1");
+                    publishMessage("stepper/lens/y/bwd", "3" +
+                            "");
                 }
                 return true;
             }
