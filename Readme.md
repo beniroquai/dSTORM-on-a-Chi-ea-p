@@ -33,9 +33,7 @@ Those commands will be send by the Android APP.
 
 ## Android APP GUI
 
-
-<img src=![]("./IMAGES/Screenshot_20181008-115700.png"  width="100" height="100">
-
+![test](./IMAGES/Screenshot_20181008-115700.png | width=400)
 
 
 ## Debugging in Mosquitto
