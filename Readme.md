@@ -8,7 +8,7 @@ An additional MQTT brocker has to be installed on an external device like Raspbe
 
 Current configuration: 
 
-![](./IMAGES/DSC_0268.JPG  | width=400)
+![](./IMAGES/DSC_0268.JPG)
 
 ## List of available commands
 
@@ -33,7 +33,7 @@ Those commands will be send by the Android APP.
 
 ## Android APP GUI
 
-![test](./IMAGES/Screenshot_20181008-115700.png | width=400)
+![test](./IMAGES/Screenshot_20181008-115700.png)
 
 
 ## Debugging in Mosquitto
