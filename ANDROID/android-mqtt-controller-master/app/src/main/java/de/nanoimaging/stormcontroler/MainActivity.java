@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -57,6 +58,9 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     final String clientId = "Mobile";
     final String pub_topic_lens_xl = "/home/lights";
 
+
+    // TAG
+    String TAG = "dSTORM-on-a-chieap";
     // Seekbars
     private SeekBar seekbar_x_left;
     private SeekBar seekbar_y_left;
@@ -91,6 +95,28 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     Button button_lensy_fwd;
     Button button_lensx_fwd;
 
+    Button button_x_left_plus;
+    Button button_x_left_minus;
+    Button button_y_left_plus;
+    Button button_y_left_minus;
+    Button button_z_left_plus;
+    Button button_z_left_minus;
+    Button button_x_right_plus;
+    Button button_x_right_minus;
+    Button button_y_right_plus;
+    Button button_y_right_minus;
+    Button button_z_right_plus;
+    Button button_z_right_minus;
+
+    // Safe the state of the progress bar
+    int lens_right_x = 0;
+    int lens_right_y = 0;
+    int lens_right_z = 0;
+    int lens_left_x = 0;
+    int lens_left_y = 0;
+    int lens_left_z = 0;
+
+
 
 
     @Override
@@ -115,6 +141,19 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         button_lensy_fwd = findViewById(R.id.button_lensy_fwd);
         button_lensy_bwd = findViewById(R.id.button_lensy_bwd);
 
+        button_x_left_plus = findViewById(R.id.button_x_left_plus);
+        button_x_left_minus = findViewById(R.id.button_x_left_minus);
+        button_y_left_plus = findViewById(R.id.button_y_left_plus);
+        button_y_left_minus = findViewById(R.id.button_y_left_minus);
+        button_z_left_plus = findViewById(R.id.button_z_left_plus);
+        button_z_left_minus = findViewById(R.id.button_z_left_minus);
+        button_x_right_plus = findViewById(R.id.button_x_right_plus);
+        button_x_right_minus = findViewById(R.id.button_x_right_minus);
+        button_y_right_plus = findViewById(R.id.button_y_right_plus);
+        button_y_right_minus = findViewById(R.id.button_y_right_minus);
+        button_z_right_plus = findViewById(R.id.button_z_right_plus);
+        button_z_right_minus = findViewById(R.id.button_z_right_minus);
+
         // set seekbar and coresponding texts for GUI
         seekbar_x_left = (SeekBar) findViewById(R.id.seekbar_x_left);
         seekbar_y_left = (SeekBar) findViewById(R.id.seekbar_y_left);
@@ -137,6 +176,9 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         seekbar_x_right.setOnSeekBarChangeListener(this);
         seekbar_y_right.setOnSeekBarChangeListener(this);
         seekbar_z_right.setOnSeekBarChangeListener(this);
+
+
+
 
 
         if(isNetworkAvailable()) {
@@ -294,6 +336,146 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         });
 
 
+
+        // incremental updates on the lenses positions by +/- buttons
+        button_x_left_plus.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                    lens_right_x++;
+                    publishMessage("lens/left/x", String.valueOf(lens_right_x));
+                    textViewYLeft.setText("LX (left): "+String.valueOf(lens_right_x));
+                }
+                return true;
+            }
+        });
+
+        button_x_left_minus.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                    lens_right_x--;
+                    publishMessage("lens/left/x", String.valueOf(lens_right_x));
+                }
+                return true;
+            }
+        });
+
+        button_y_left_plus.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                    lens_right_y++;
+                    publishMessage("lens/left/y", String.valueOf(lens_right_y));
+                }
+                return true;
+            }
+        });
+
+        button_y_left_minus.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                    lens_right_y--;
+                    publishMessage("lens/left/y", String.valueOf(lens_right_y));
+                }
+                return true;
+            }
+        });
+
+        button_z_left_plus.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                    lens_right_z++;
+                    publishMessage("lens/left/z", String.valueOf(lens_right_z));
+                }
+                return true;
+            }
+        });
+
+        button_z_left_minus.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                    lens_right_z--;
+                    publishMessage("lens/left/z", String.valueOf(lens_right_z));
+                }
+                return true;
+            }
+        });
+
+        // incremental updates on the lenses positions by +/- buttons
+        button_x_right_plus.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                    lens_right_x++;
+                    publishMessage("lens/right/x", String.valueOf(lens_right_x));
+                }
+                return true;
+            }
+        });
+
+        button_x_right_minus.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                    lens_right_x--;
+                    publishMessage("lens/right/x", String.valueOf(lens_right_x));
+                }
+                return true;
+            }
+        });
+
+        button_y_right_plus.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                    lens_right_y++;
+                    publishMessage("lens/right/y", String.valueOf(lens_right_y));
+                }
+                return true;
+            }
+        });
+
+        button_y_right_minus.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                    lens_right_y--;
+                    publishMessage("lens/right/y", String.valueOf(lens_right_y));
+                }
+                return true;
+            }
+        });
+
+        button_z_right_plus.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                    lens_right_z++;
+                    publishMessage("lens/right/z", String.valueOf(lens_right_z));
+                }
+                return true;
+            }
+        });
+
+        button_z_right_minus.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                    lens_right_z--;
+                    publishMessage("lens/right/z", String.valueOf(lens_right_z));
+                }
+                return true;
+            }
+        });
+
+
+
+
+
     }
 
     @Override
@@ -301,40 +483,47 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     {
         if (bar.equals(seekbar_x_left)) {
             // For left Lens in X
-            textViewXLeft.setText("Lens X (left): "+String.valueOf(progress));
+            lens_left_x = progress;
+            textViewXLeft.setText("LX (left): "+String.valueOf(progress));
             publishMessage("lens/left/x", String.valueOf(progress));
         }
         else if (bar.equals(seekbar_y_left))
         {
             // For left Lens in Y
-            textViewYLeft.setText("Lens Y (left): "+String.valueOf(progress));
+            lens_left_y = progress;
+            textViewYLeft.setText("LY (left): "+String.valueOf(progress));
             publishMessage("lens/left/y", String.valueOf(progress));
         }
         else if (bar.equals(seekbar_z_left))
         {
             // For left Lens in Z
-            textViewZLeft.setText("Lens Z (left): "+String.valueOf(progress));
+            lens_left_z = progress;
+            textViewZLeft.setText("LZ (left): "+String.valueOf(progress));
             publishMessage("lens/left/z", String.valueOf(progress));
         }
         else if (bar.equals(seekbar_x_right))
         {
             // For right Lens in X
-            textViewXRight.setText("Lens X (right): "+String.valueOf(progress));
+            lens_right_x = progress;
+            textViewXRight.setText("LX (right): "+String.valueOf(progress));
             publishMessage("lens/right/x", String.valueOf(progress));
         }
         else if (bar.equals(seekbar_y_right))
         {
             // For right Lens in Y
-            textViewYRight.setText("Lens Y (right): "+String.valueOf(progress));
+            lens_right_y = progress;
+            textViewYRight.setText("LY (right): "+String.valueOf(progress));
             publishMessage("lens/right/y", String.valueOf(progress));
         }
         else if (bar.equals(seekbar_z_right))
         {
             // For right Lens in Z
-            textViewZRight.setText("Lens Z (right): "+String.valueOf(progress));
+            lens_right_z = progress;
+            textViewZRight.setText("LZ (right): "+String.valueOf(progress));
             publishMessage("lens/right/z", String.valueOf(progress));
         }
     }
+
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
@@ -428,6 +617,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
     public void publishMessage(String pub_topic, String publishMessage){
 
+        Log.d(TAG, publishMessage);
         try {
             MqttMessage message = new MqttMessage();
             message.setPayload(publishMessage.getBytes());
