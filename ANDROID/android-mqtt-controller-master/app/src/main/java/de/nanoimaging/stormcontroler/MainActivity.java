@@ -62,17 +62,21 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     // TAG
     String TAG = "dSTORM-on-a-chieap";
     // Seekbars
+
+    /*
     private SeekBar seekbar_x_left;
+    private SeekBar seekbar_z_right;
+    TextView textViewZRight;
+    TextView textViewXLeft;
+    */
+
     private SeekBar seekbar_y_left;
     private SeekBar seekbar_z_left;
     private SeekBar seekbar_x_right;
     private SeekBar seekbar_y_right;
-    private SeekBar seekbar_z_right;
 
     TextView textViewXRight;
     TextView textViewYRight;
-    TextView textViewZRight;
-    TextView textViewXLeft;
     TextView textViewYLeft;
     TextView textViewZLeft;
 
@@ -90,13 +94,38 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     Button button_y_bwd_coarse;
     Button button_y_bwd_fine;
 
-    Button button_lensy_bwd;
-    Button button_lensx_bwd;
-    Button button_lensy_fwd;
-    Button button_lensx_fwd;
+    //Button button_lensy_bwd;
+    //Button button_lensx_bwd;
+    //Button button_lensy_fwd;
+    //Button button_lensx_fwd;
 
+
+    /*
+    // Temporarily not in use
+    button_lensx_fwd = findViewById(R.id.button_lensx_fwd);
+    button_lensx_bwd = findViewById(R.id.button_lensx_bwd);
+    button_lensy_fwd = findViewById(R.id.button_lensy_fwd);
+    button_lensy_bwd = findViewById(R.id.button_lensy_bwd);
+    button_x_left_plus = findViewById(R.id.button_x_left_plus);
+    button_x_left_minus = findViewById(R.id.button_x_left_minus);
+    button_z_right_plus = findViewById(R.id.button_z_right_plus);
+    button_z_right_minus = findViewById(R.id.button_z_right_minus);
+    seekbar_x_left = (SeekBar) findViewById(R.id.seekbar_x_left);
+    seekbar_z_right = (SeekBar) findViewById(R.id.seekbar_z_right);
+    textViewZRight = findViewById(R.id.textViewZRight);
+    textViewXLeft = findViewById(R.id.textViewXLeft);
+    seekbar_x_left.setOnSeekBarChangeListener(this);
+    seekbar_z_right.setOnSeekBarChangeListener(this);
+
+
+*/
+    /*
     Button button_x_left_plus;
     Button button_x_left_minus;
+    Button button_z_right_plus;
+    Button button_z_right_minus;
+
+    */
     Button button_y_left_plus;
     Button button_y_left_minus;
     Button button_z_left_plus;
@@ -105,8 +134,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     Button button_x_right_minus;
     Button button_y_right_plus;
     Button button_y_right_minus;
-    Button button_z_right_plus;
-    Button button_z_right_minus;
 
     // Safe the state of the progress bar
     int lens_right_x = 0;
@@ -136,13 +163,8 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         button_y_fwd_fine = findViewById(R.id.button_y_fwd_fine);
         button_y_bwd_coarse = findViewById(R.id.button_y_bwd_coarse);
         button_y_bwd_fine = findViewById(R.id.button_y_bwd_fine);
-        button_lensx_fwd = findViewById(R.id.button_lensx_fwd);
-        button_lensx_bwd = findViewById(R.id.button_lensx_bwd);
-        button_lensy_fwd = findViewById(R.id.button_lensy_fwd);
-        button_lensy_bwd = findViewById(R.id.button_lensy_bwd);
 
-        button_x_left_plus = findViewById(R.id.button_x_left_plus);
-        button_x_left_minus = findViewById(R.id.button_x_left_minus);
+
         button_y_left_plus = findViewById(R.id.button_y_left_plus);
         button_y_left_minus = findViewById(R.id.button_y_left_minus);
         button_z_left_plus = findViewById(R.id.button_z_left_plus);
@@ -151,31 +173,24 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         button_x_right_minus = findViewById(R.id.button_x_right_minus);
         button_y_right_plus = findViewById(R.id.button_y_right_plus);
         button_y_right_minus = findViewById(R.id.button_y_right_minus);
-        button_z_right_plus = findViewById(R.id.button_z_right_plus);
-        button_z_right_minus = findViewById(R.id.button_z_right_minus);
 
         // set seekbar and coresponding texts for GUI
-        seekbar_x_left = (SeekBar) findViewById(R.id.seekbar_x_left);
         seekbar_y_left = (SeekBar) findViewById(R.id.seekbar_y_left);
         seekbar_z_left = (SeekBar) findViewById(R.id.seekbar_z_left);
         seekbar_x_right = (SeekBar) findViewById(R.id.seekbar_x_right);
         seekbar_y_right = (SeekBar) findViewById(R.id.seekbar_y_right);
-        seekbar_z_right = (SeekBar) findViewById(R.id.seekbar_z_right);
+
 
         textViewXRight = findViewById(R.id.textViewXRight);
         textViewYRight = findViewById(R.id.textViewYRight);
-        textViewZRight = findViewById(R.id.textViewZRight);
-        textViewXLeft = findViewById(R.id.textViewXLeft);
         textViewYLeft = findViewById(R.id.textViewYLeft);
         textViewZLeft = findViewById(R.id.textViewZLeft);
 
         //set change listener
-        seekbar_x_left.setOnSeekBarChangeListener(this);
         seekbar_y_left.setOnSeekBarChangeListener(this);
         seekbar_z_left.setOnSeekBarChangeListener(this);
         seekbar_x_right.setOnSeekBarChangeListener(this);
         seekbar_y_right.setOnSeekBarChangeListener(this);
-        seekbar_z_right.setOnSeekBarChangeListener(this);
 
 
 
@@ -297,6 +312,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
         //******************* STEPPER for coarse Lens movement in XY ********************************************//
         // this goes wherever you setup your button listener:
+        /*
         button_lensx_fwd.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -335,14 +351,13 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             }
         });
 
-
-
         // incremental updates on the lenses positions by +/- buttons
         button_x_left_plus.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lens_right_x++;
+                    lens_left_x++;
+                    updateGUI();
                     publishMessage("lens/left/x", String.valueOf(lens_right_x));
                     textViewYLeft.setText("LX (left): "+String.valueOf(lens_right_x));
                 }
@@ -350,22 +365,26 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             }
         });
 
+
         button_x_left_minus.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lens_right_x--;
+                    lens_left_x--;
+                    updateGUI();
                     publishMessage("lens/left/x", String.valueOf(lens_right_x));
                 }
                 return true;
             }
         });
+        */
 
         button_y_left_plus.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lens_right_y++;
+                    lens_left_y++;
+                    updateGUI();
                     publishMessage("lens/left/y", String.valueOf(lens_right_y));
                 }
                 return true;
@@ -376,7 +395,8 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lens_right_y--;
+                    lens_left_y--;
+                    updateGUI();
                     publishMessage("lens/left/y", String.valueOf(lens_right_y));
                 }
                 return true;
@@ -387,7 +407,8 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lens_right_z++;
+                    lens_left_z++;
+                    updateGUI();
                     publishMessage("lens/left/z", String.valueOf(lens_right_z));
                 }
                 return true;
@@ -398,7 +419,8 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lens_right_z--;
+                    lens_left_z--;
+                    updateGUI();
                     publishMessage("lens/left/z", String.valueOf(lens_right_z));
                 }
                 return true;
@@ -411,6 +433,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
                     lens_right_x++;
+                    updateGUI();
                     publishMessage("lens/right/x", String.valueOf(lens_right_x));
                 }
                 return true;
@@ -422,6 +445,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
                     lens_right_x--;
+                    updateGUI();
                     publishMessage("lens/right/x", String.valueOf(lens_right_x));
                 }
                 return true;
@@ -433,6 +457,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
                     lens_right_y++;
+                    updateGUI();
                     publishMessage("lens/right/y", String.valueOf(lens_right_y));
                 }
                 return true;
@@ -444,17 +469,20 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
                     lens_right_y--;
+                    updateGUI();
                     publishMessage("lens/right/y", String.valueOf(lens_right_y));
                 }
                 return true;
             }
         });
 
+        /*
         button_z_right_plus.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
                     lens_right_z++;
+                    updateGUI();
                     publishMessage("lens/right/z", String.valueOf(lens_right_z));
                 }
                 return true;
@@ -466,12 +494,13 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
                     lens_right_z--;
+                    updateGUI();
                     publishMessage("lens/right/z", String.valueOf(lens_right_z));
                 }
                 return true;
             }
         });
-
+        */
 
 
 
@@ -481,48 +510,74 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     @Override
     public void onProgressChanged(SeekBar bar, int progress, boolean fromUser)
     {
+        /*
         if (bar.equals(seekbar_x_left)) {
             // For left Lens in X
             lens_left_x = progress;
-            textViewXLeft.setText("LX (left): "+String.valueOf(progress));
+            updateGUI();
             publishMessage("lens/left/x", String.valueOf(progress));
         }
-        else if (bar.equals(seekbar_y_left))
+        */
+        if (bar.equals(seekbar_y_left))
         {
             // For left Lens in Y
             lens_left_y = progress;
-            textViewYLeft.setText("LY (left): "+String.valueOf(progress));
+            updateGUI();
             publishMessage("lens/left/y", String.valueOf(progress));
         }
         else if (bar.equals(seekbar_z_left))
         {
             // For left Lens in Z
             lens_left_z = progress;
-            textViewZLeft.setText("LZ (left): "+String.valueOf(progress));
+            updateGUI();
             publishMessage("lens/left/z", String.valueOf(progress));
         }
         else if (bar.equals(seekbar_x_right))
         {
             // For right Lens in X
             lens_right_x = progress;
-            textViewXRight.setText("LX (right): "+String.valueOf(progress));
+            updateGUI();
             publishMessage("lens/right/x", String.valueOf(progress));
         }
         else if (bar.equals(seekbar_y_right))
         {
             // For right Lens in Y
             lens_right_y = progress;
-            textViewYRight.setText("LY (right): "+String.valueOf(progress));
+            updateGUI();
             publishMessage("lens/right/y", String.valueOf(progress));
         }
+        /*
         else if (bar.equals(seekbar_z_right))
         {
             // For right Lens in Z
             lens_right_z = progress;
-            textViewZRight.setText("LZ (right): "+String.valueOf(progress));
+            updateGUI();
             publishMessage("lens/right/z", String.valueOf(progress));
-        }
+        }*/
     }
+
+    public void updateGUI(){
+
+        textViewXRight.setText("LX (right): "+String.valueOf(lens_right_x));
+        seekbar_x_right.setProgress(lens_right_x);
+
+        textViewYLeft.setText("Ly (left): "+String.valueOf(lens_left_y));
+        seekbar_y_left.setProgress(lens_left_y);
+
+        textViewYRight.setText("LY (right): "+String.valueOf(lens_right_y));
+        seekbar_y_right.setProgress(lens_right_y);
+
+        textViewZLeft.setText("LY (right): "+String.valueOf(lens_left_z));
+        seekbar_z_left.setProgress(lens_left_z);
+
+        /*
+        textViewXLeft.setText("LX (right): "+String.valueOf(lens_left_x));
+        seekbar_x_left.setProgress(lens_left_x);
+        textViewZRight.setText("LZ (right): "+String.valueOf(lens_right_z));
+        seekbar_z_right.setProgress(lens_right_z);
+        */
+    }
+
 
 
     @Override
