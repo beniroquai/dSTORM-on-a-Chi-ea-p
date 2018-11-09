@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/button_lights_right"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:enabled="true"
+            android:text="LED RIGHT" />
+
+        <Button
+            android:id="@+id/button_lights_left"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:enabled="true"
+            android:text="LED LEFT" />
+    </LinearLayout>
+
+    <!--
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:orientation="horizontal">
+
+         <TextView
+             android:id="@+id/textViewXLeft"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="LX (left)"
+             android:textSize="8pt"
+             android:visibility="invisible" />
+
+         <Button
+             android:id="@+id/button_x_left_minus"
+             android:layout_width="13pt"
+             android:layout_height="24pt"
+             android:layout_weight="1"
+             android:text="-"
+             android:visibility="invisible"/>
+
+         <SeekBar
+             android:id="@+id/seekbar_x_left"
+             android:layout_width="50pt"
+             android:layout_height="match_parent"
+             android:layout_weight="1"
+             android:max="255"
+             android:visibility="invisible"/>
+
+         <Button
+             android:id="@+id/button_x_left_plus"
+             android:layout_width="13pt"
+             android:layout_height="24pt"
+             android:layout_weight="1"
+             android:text="+"
+             android:visibility="invisible"/>
+     </LinearLayout>
+
+-->
+
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:orientation="horizontal">
+
+         <TextView
+             android:id="@+id/textViewYLeft"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="LY (left)"
+             android:textSize="8pt" />
+
+         <Button
+             android:id="@+id/button_y_left_minus"
+             android:layout_width="13pt"
+             android:layout_height="24pt"
+             android:layout_weight="1"
+             android:text="-" />
+
+         <SeekBar
+             android:id="@+id/seekbar_y_left"
+             android:layout_width="50pt"
+             android:layout_height="match_parent"
+             android:layout_weight="1"
+             android:max="255" />
+
+         <Button
+             android:id="@+id/button_y_left_plus"
+             android:layout_width="13pt"
+             android:layout_height="24pt"
+             android:layout_weight="1"
+             android:text="+" />
+     </LinearLayout>
+
+
+
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:orientation="horizontal">
+
+         <TextView
+             android:id="@+id/textViewZLeft"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="LZ (left)"
+             android:textSize="8pt" />
+
+         <Button
+             android:id="@+id/button_z_left_minus"
+             android:layout_width="13pt"
+             android:layout_height="24pt"
+             android:layout_weight="1"
+             android:text="-" />
+
+         <SeekBar
+             android:id="@+id/seekbar_z_left"
+             android:layout_width="50pt"
+             android:layout_height="match_parent"
+             android:layout_weight="1"
+             android:max="255" />
+
+         <Button
+             android:id="@+id/button_z_left_plus"
+             android:layout_width="13pt"
+             android:layout_height="24pt"
+             android:layout_weight="1"
+             android:text="+" />
+     </LinearLayout>
+
+     <Space
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:layout_marginHorizontal="10dp"
+         android:layout_marginVertical="10dp" />
+
+
+
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:orientation="horizontal">
+
+         <TextView
+             android:id="@+id/textViewXRight"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="LX (right)"
+             android:textSize="8pt" />
+
+         <Button
+             android:id="@+id/button_x_right_minus"
+             android:layout_width="13pt"
+             android:layout_height="24pt"
+             android:layout_weight="1"
+             android:text="-" />
+
+         <SeekBar
+             android:id="@+id/seekbar_x_right"
+             android:layout_width="50pt"
+             android:layout_height="match_parent"
+             android:layout_weight="1"
+             android:max="255" />
+
+         <Button
+             android:id="@+id/button_x_right_plus"
+             android:layout_width="13pt"
+             android:layout_height="24pt"
+             android:layout_weight="1"
+             android:text="+" />
+     </LinearLayout>
+
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:orientation="horizontal">
+
+         <TextView
+             android:id="@+id/textViewYRight"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="LY (right)"
+             android:textSize="8pt" />
+
+         <Button
+             android:id="@+id/button_y_right_minus"
+             android:layout_width="13pt"
+             android:layout_height="24pt"
+             android:layout_weight="1"
+             android:text="-" />
+
+         <SeekBar
+             android:id="@+id/seekbar_y_right"
+             android:layout_width="50pt"
+             android:layout_height="match_parent"
+             android:layout_weight="1"
+             android:max="255" />
+
+         <Button
+             android:id="@+id/button_y_right_plus"
+             android:layout_width="13pt"
+             android:layout_height="24pt"
+             android:layout_weight="1"
+             android:text="+" />
+     </LinearLayout>
+
+
+
+    <!--
+         <LinearLayout
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:orientation="horizontal">
+
+             <TextView
+                 android:id="@+id/textViewZRight"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="LZ (right)"
+                 android:textSize="8pt" />
+
+             <Button
+                 android:id="@+id/button_z_right_minus"
+                 android:layout_width="13pt"
+                 android:layout_height="24pt"
+                 android:layout_weight="1"
+                 android:text="-" />
+
+             <SeekBar
+                 android:id="@+id/seekbar_z_right"
+                 android:layout_width="50pt"
+                 android:layout_height="wrap_content"
+                 android:layout_weight="1"
+                 android:max="255" />
+
+             <Button
+                 android:id="@+id/button_z_right_plus"
+                 android:layout_width="13pt"
+                 android:layout_height="24pt"
+                 android:layout_weight="1"
+                 android:text="+" />
+         </LinearLayout>
+        -->
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:orientation="horizontal">
+
+         <Button
+             android:id="@+id/button_x_fwd_coarse"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="X++"
+             android:enabled="true" />
+
+         <Button
+             android:id="@+id/button_x_fwd_fine"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="X+"
+             android:enabled="true" />
+
+         <Button
+             android:id="@+id/button_x_bwd_fine"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="X-"
+             android:enabled="true" />
+
+         <Button
+             android:id="@+id/button_x_bwd_coarse"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="X--"
+             android:enabled="true" />
+
+     </LinearLayout>
+
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:orientation="horizontal">
+
+         <Button
+             android:id="@+id/button_y_fwd_coarse"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="Y++"
+             android:enabled="true" />
+
+         <Button
+             android:id="@+id/button_y_fwd_fine"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="Y+"
+             android:enabled="true" />
+
+         <Button
+             android:id="@+id/button_y_bwd_fine"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="Y-"
+             android:enabled="true" />
+
+         <Button
+             android:id="@+id/button_y_bwd_coarse"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="Y--"
+             android:enabled="true" />
+
+     </LinearLayout>
+
+    <!--
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:orientation="horizontal">
+
+         <Button
+             android:id="@+id/button_lensy_fwd"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="LY +"
+             android:enabled="true" />
+
+         <Button
+             android:id="@+id/button_lensy_bwd"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="LY -"
+             android:enabled="true" />
+
+         <Button
+             android:id="@+id/button_lensx_fwd"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="LX +"
+             android:enabled="true" />
+
+         <Button
+             android:id="@+id/button_lensx_bwd"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="LX -"
+             android:enabled="true" />
+
+     </LinearLayout>
+     -->
+ </LinearLayout>
