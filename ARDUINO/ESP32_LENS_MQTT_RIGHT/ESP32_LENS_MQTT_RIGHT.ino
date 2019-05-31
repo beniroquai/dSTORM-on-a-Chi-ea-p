@@ -46,11 +46,11 @@ const char led = 2;
 // PWM Stuff
 int resolution = 8;
 int pwm_channel_x = 0;
-int pwmpin_x = 25;
+int pwmpin_x = 27;
 int pwm_channel_y = 1;
 int pwmpin_y = 26;
 int pwm_channel_z = 2;
-int pwmpin_z = 33;
+int pwmpin_z = 27;
 
 long lastMsg = 0;
 char msg[20];

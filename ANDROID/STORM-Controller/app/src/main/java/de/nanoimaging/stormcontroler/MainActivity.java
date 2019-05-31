@@ -3,15 +3,18 @@ package de.nanoimaging.stormcontroler;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
@@ -22,8 +25,6 @@ import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-
-import de.nanoimaging.stormcontroler.R;
 
 
 /*
@@ -56,29 +57,33 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     final String mqttPass = "pi";
 
     final String clientId = "Mobile";
-    final String pub_topic_lens_xl = "/home/lights";
 
-
+    boolean is_vibration = false;
     // TAG
     String TAG = "dSTORM-on-a-chieap";
+
+    // MQTT Topics
+    String topic_x_left = "lens/left/x";
+    String topic_x_right = "lens/right/x";
+    String topic_z_left = "lens/left/z";
+    String topic_z_right = "lens/right/z";
+    String topic_both_vibrate = "lens/both/vibrate";
+
+    // PWM settings
+    int seekbar_max = 1024-1; // bitrate of the PWM signal
+    int myperiode = 20; // time to pause between toggling
+    int myamplitude = 20; // amplitude of the lens in each periode
+
     // Seekbars
-
-    /*
-    private SeekBar seekbar_x_left;
-    private SeekBar seekbar_z_right;
-    TextView textViewZRight;
-    TextView textViewXLeft;
-    */
-
-    private SeekBar seekbar_y_left;
     private SeekBar seekbar_z_left;
+    private SeekBar seekbar_x_left;
     private SeekBar seekbar_x_right;
-    private SeekBar seekbar_y_right;
+    private SeekBar seekbar_z_right;
 
     TextView textViewXRight;
-    TextView textViewYRight;
-    TextView textViewYLeft;
+    TextView textViewZRight;
     TextView textViewZLeft;
+    TextView textViewXLeft;
 
     // Buttons
     Button lightsButtonLeft;
@@ -94,31 +99,9 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     Button button_y_bwd_coarse;
     Button button_y_bwd_fine;
 
-    //Button button_lensy_bwd;
-    //Button button_lensx_bwd;
-    //Button button_lensy_fwd;
-    //Button button_lensx_fwd;
+    ToggleButton button_vibrate;
 
 
-    /*
-    // Temporarily not in use
-    button_lensx_fwd = findViewById(R.id.button_lensx_fwd);
-    button_lensx_bwd = findViewById(R.id.button_lensx_bwd);
-    button_lensy_fwd = findViewById(R.id.button_lensy_fwd);
-    button_lensy_bwd = findViewById(R.id.button_lensy_bwd);
-    button_x_left_plus = findViewById(R.id.button_x_left_plus);
-    button_x_left_minus = findViewById(R.id.button_x_left_minus);
-    button_z_right_plus = findViewById(R.id.button_z_right_plus);
-    button_z_right_minus = findViewById(R.id.button_z_right_minus);
-    seekbar_x_left = (SeekBar) findViewById(R.id.seekbar_x_left);
-    seekbar_z_right = (SeekBar) findViewById(R.id.seekbar_z_right);
-    textViewZRight = findViewById(R.id.textViewZRight);
-    textViewXLeft = findViewById(R.id.textViewXLeft);
-    seekbar_x_left.setOnSeekBarChangeListener(this);
-    seekbar_z_right.setOnSeekBarChangeListener(this);
-
-
-*/
     /*
     Button button_x_left_plus;
     Button button_x_left_minus;
@@ -128,8 +111,8 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     */
     Button button_y_left_plus;
     Button button_y_left_minus;
-    Button button_z_left_plus;
-    Button button_z_left_minus;
+    Button button_x_left_plus;
+    Button button_x_left_minus;
     Button button_x_right_plus;
     Button button_x_right_minus;
     Button button_y_right_plus;
@@ -138,11 +121,8 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     // Safe the state of the progress bar
     int lens_right_x = 0;
     int lens_right_y = 0;
-    int lens_right_z = 0;
-    int lens_left_x = 0;
     int lens_left_y = 0;
-    int lens_left_z = 0;
-
+    int lens_left_x = 0;
 
 
 
@@ -163,36 +143,40 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         button_y_fwd_fine = findViewById(R.id.button_y_fwd_fine);
         button_y_bwd_coarse = findViewById(R.id.button_y_bwd_coarse);
         button_y_bwd_fine = findViewById(R.id.button_y_bwd_fine);
+        button_vibrate = findViewById(R.id.button_vibrate);
+        button_vibrate.setTextOn("Vibration: ON");
+        button_vibrate.setTextOff("Vibration: OFF");
 
-
-        button_y_left_plus = findViewById(R.id.button_y_left_plus);
-        button_y_left_minus = findViewById(R.id.button_y_left_minus);
-        button_z_left_plus = findViewById(R.id.button_z_left_plus);
-        button_z_left_minus = findViewById(R.id.button_z_left_minus);
+        button_y_left_plus = findViewById(R.id.button_z_left_plus);
+        button_y_left_minus = findViewById(R.id.button_z_left_minus);
+        button_x_left_plus = findViewById(R.id.button_x_left_plus);
+        button_x_left_minus = findViewById(R.id.button_x_left_minus);
         button_x_right_plus = findViewById(R.id.button_x_right_plus);
         button_x_right_minus = findViewById(R.id.button_x_right_minus);
-        button_y_right_plus = findViewById(R.id.button_y_right_plus);
-        button_y_right_minus = findViewById(R.id.button_y_right_minus);
+        button_y_right_plus = findViewById(R.id.button_z_right_plus);
+        button_y_right_minus = findViewById(R.id.button_z_right_minus);
 
         // set seekbar and coresponding texts for GUI
-        seekbar_y_left = (SeekBar) findViewById(R.id.seekbar_y_left);
+        seekbar_x_left = (SeekBar) findViewById(R.id.seekbar_x_left);
         seekbar_z_left = (SeekBar) findViewById(R.id.seekbar_z_left);
         seekbar_x_right = (SeekBar) findViewById(R.id.seekbar_x_right);
-        seekbar_y_right = (SeekBar) findViewById(R.id.seekbar_y_right);
+        seekbar_z_right = (SeekBar) findViewById(R.id.seekbar_z_right);
 
+        seekbar_x_right.setMax(seekbar_max);
+        seekbar_z_right.setMax(seekbar_max);
+        seekbar_x_left.setMax(seekbar_max);
+        seekbar_z_left.setMax(seekbar_max);
 
         textViewXRight = findViewById(R.id.textViewXRight);
-        textViewYRight = findViewById(R.id.textViewYRight);
-        textViewYLeft = findViewById(R.id.textViewYLeft);
+        textViewZRight = findViewById(R.id.textViewZRight);
+        textViewXLeft = findViewById(R.id.textViewXLeft);
         textViewZLeft = findViewById(R.id.textViewZLeft);
 
         //set change listener
-        seekbar_y_left.setOnSeekBarChangeListener(this);
-        seekbar_z_left.setOnSeekBarChangeListener(this);
         seekbar_x_right.setOnSeekBarChangeListener(this);
-        seekbar_y_right.setOnSeekBarChangeListener(this);
-
-
+        seekbar_z_right.setOnSeekBarChangeListener(this);
+        seekbar_x_left.setOnSeekBarChangeListener(this);
+        seekbar_z_left.setOnSeekBarChangeListener(this);
 
 
 
@@ -310,74 +294,24 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         });
 
 
-        //******************* STEPPER for coarse Lens movement in XY ********************************************//
-        // this goes wherever you setup your button listener:
-        /*
-        button_lensx_fwd.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    publishMessage("stepper/lens/x/fwd", "3");
-                }
-                return true;
-            }
-        });
-        button_lensx_bwd.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    publishMessage("stepper/lens/x/bwd", "3");
-                }
-                return true;
-            }
-        });
-        button_lensy_fwd.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    publishMessage("stepper/lens/y/fwd", "3");
-                }
-                return true;
-            }
-        });
-        button_lensy_bwd.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    publishMessage("stepper/lens/y/bwd", "3" +
-                            "");
-                }
-                return true;
-            }
-        });
 
-        // incremental updates on the lenses positions by +/- buttons
-        button_x_left_plus.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lens_left_x++;
-                    updateGUI();
-                    publishMessage("lens/left/x", String.valueOf(lens_right_x));
-                    textViewYLeft.setText("LX (left): "+String.valueOf(lens_right_x));
+        button_vibrate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Log.i(TAG, "Checked");
+                    is_vibration = true;
+                    publishMessage(topic_both_vibrate, "1");
+                    //new vibration_process().execute("");
+                } else {
+                    is_vibration = false;
+                    publishMessage(topic_both_vibrate, "0");
+                    Log.i(TAG, "Not Checked");
                 }
-                return true;
             }
-        });
+
+    });
 
 
-        button_x_left_minus.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lens_left_x--;
-                    updateGUI();
-                    publishMessage("lens/left/x", String.valueOf(lens_right_x));
-                }
-                return true;
-            }
-        });
-        */
 
         button_y_left_plus.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -385,7 +319,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
                     lens_left_y++;
                     updateGUI();
-                    publishMessage("lens/left/y", String.valueOf(lens_left_y));
+                    publishMessage(topic_z_left, String.valueOf(lens_left_y));
                 }
                 return true;
             }
@@ -397,31 +331,31 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
                     lens_left_y--;
                     updateGUI();
-                    publishMessage("lens/left/y", String.valueOf(lens_left_y));
+                    publishMessage(topic_z_left, String.valueOf(lens_left_y));
                 }
                 return true;
             }
         });
 
-        button_z_left_plus.setOnTouchListener(new View.OnTouchListener() {
+        button_x_left_plus.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lens_left_z++;
+                    lens_left_x++;
                     updateGUI();
-                    publishMessage("lens/left/z", String.valueOf(lens_left_z));
+                    publishMessage(topic_x_left, String.valueOf(lens_left_x));
                 }
                 return true;
             }
         });
 
-        button_z_left_minus.setOnTouchListener(new View.OnTouchListener() {
+        button_x_left_minus.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lens_left_z--;
+                    lens_left_x--;
                     updateGUI();
-                    publishMessage("lens/left/z", String.valueOf(lens_left_z));
+                    publishMessage(topic_x_left , String.valueOf(lens_left_x));
                 }
                 return true;
             }
@@ -434,7 +368,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
                     lens_right_x++;
                     updateGUI();
-                    publishMessage("lens/right/x", String.valueOf(lens_right_x));
+                    publishMessage(topic_x_right, String.valueOf(lens_right_x));
                 }
                 return true;
             }
@@ -446,7 +380,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
                     lens_right_x--;
                     updateGUI();
-                    publishMessage("lens/right/x", String.valueOf(lens_right_x));
+                    publishMessage(topic_x_right, String.valueOf(lens_right_x));
                 }
                 return true;
             }
@@ -458,7 +392,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
                     lens_right_y++;
                     updateGUI();
-                    publishMessage("lens/right/y", String.valueOf(lens_right_y));
+                    publishMessage(topic_z_left, String.valueOf(lens_right_y));
                 }
                 return true;
             }
@@ -470,39 +404,11 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
                     lens_right_y--;
                     updateGUI();
-                    publishMessage("lens/right/y", String.valueOf(lens_right_y));
+                    publishMessage(topic_z_right, String.valueOf(lens_right_y));
                 }
                 return true;
             }
         });
-
-        /*
-        button_z_right_plus.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lens_right_z++;
-                    updateGUI();
-                    publishMessage("lens/right/z", String.valueOf(lens_right_z));
-                }
-                return true;
-            }
-        });
-
-        button_z_right_minus.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lens_right_z--;
-                    updateGUI();
-                    publishMessage("lens/right/z", String.valueOf(lens_right_z));
-                }
-                return true;
-            }
-        });
-        */
-
-
 
 
     }
@@ -518,42 +424,35 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             publishMessage("lens/left/x", String.valueOf(progress));
         }
         */
-        if (bar.equals(seekbar_y_left))
+        if (bar.equals(seekbar_z_left))
         {
             // For left Lens in Y
             lens_left_y = progress;
             updateGUI();
-            publishMessage("lens/left/y", String.valueOf(progress));
+            publishMessage(topic_z_left, String.valueOf(progress));
         }
-        else if (bar.equals(seekbar_z_left))
+        else if (bar.equals(seekbar_x_left))
         {
             // For left Lens in Z
-            lens_left_z = progress;
+            lens_left_x = progress;
             updateGUI();
-            publishMessage("lens/left/z", String.valueOf(progress));
+            publishMessage(topic_x_left, String.valueOf(progress));
         }
         else if (bar.equals(seekbar_x_right))
         {
             // For right Lens in X
             lens_right_x = progress;
             updateGUI();
-            publishMessage("lens/right/x", String.valueOf(progress));
+            publishMessage(topic_x_right, String.valueOf(progress));
         }
-        else if (bar.equals(seekbar_y_right))
+        else if (bar.equals(seekbar_z_right))
         {
             // For right Lens in Y
             lens_right_y = progress;
             updateGUI();
-            publishMessage("lens/right/y", String.valueOf(progress));
+            publishMessage(topic_z_right, String.valueOf(progress));
         }
-        /*
-        else if (bar.equals(seekbar_z_right))
-        {
-            // For right Lens in Z
-            lens_right_z = progress;
-            updateGUI();
-            publishMessage("lens/right/z", String.valueOf(progress));
-        }*/
+
     }
 
     public void updateGUI(){
@@ -561,21 +460,15 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         textViewXRight.setText("LX (right): "+String.valueOf(lens_right_x));
         seekbar_x_right.setProgress(lens_right_x);
 
-        textViewYLeft.setText("Ly (left): "+String.valueOf(lens_left_y));
-        seekbar_y_left.setProgress(lens_left_y);
+        textViewZLeft.setText("Ly (left): "+String.valueOf(lens_left_y));
+        seekbar_z_left.setProgress(lens_left_y);
 
-        textViewYRight.setText("LY (right): "+String.valueOf(lens_right_y));
-        seekbar_y_right.setProgress(lens_right_y);
+        textViewZRight.setText("LY (right): "+String.valueOf(lens_right_y));
+        seekbar_z_right.setProgress(lens_right_y);
 
-        textViewZLeft.setText("LY (right): "+String.valueOf(lens_left_z));
-        seekbar_z_left.setProgress(lens_left_z);
-
-        /*
-        textViewXLeft.setText("LX (right): "+String.valueOf(lens_left_x));
+        textViewXLeft.setText("LY (right): "+String.valueOf(lens_left_x));
         seekbar_x_left.setProgress(lens_left_x);
-        textViewZRight.setText("LZ (right): "+String.valueOf(lens_right_z));
-        seekbar_z_right.setProgress(lens_right_z);
-        */
+
     }
 
 
@@ -672,7 +565,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
     public void publishMessage(String pub_topic, String publishMessage){
 
-        Log.d(TAG, publishMessage);
+        Log.d(TAG, pub_topic + " " + publishMessage);
         try {
             MqttMessage message = new MqttMessage();
             message.setPayload(publishMessage.getBytes());
@@ -689,6 +582,56 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     }
 
 
+
+    private class vibration_process extends AsyncTask<String, Void, String> {
+
+        int lens_left_x_tmp =  lens_left_x;
+        int lens_right_x_tmp =  lens_right_x;
+
+        void mysleep(int sleeptime){
+            try {
+                Thread.sleep(sleeptime);
+            } catch (InterruptedException e) {
+                Thread.interrupted();
+            }
+        }
+        @Override
+        protected String doInBackground(String... params) {
+            while(is_vibration){
+
+                lens_left_x_tmp = lens_left_x_tmp+myamplitude;
+                lens_right_x_tmp = lens_right_x_tmp+myamplitude;
+
+                publishMessage("lens/left/x", String.valueOf(lens_left_x_tmp));
+                publishMessage("lens/right/x", String.valueOf(lens_right_x_tmp));
+                mysleep(myperiode);
+
+                lens_left_x_tmp = lens_left_x_tmp-myamplitude;
+                lens_right_x_tmp = lens_right_x_tmp-myamplitude;
+
+                publishMessage("lens/left/x", String.valueOf(lens_left_x_tmp));
+                publishMessage("lens/right/x", String.valueOf(lens_right_x_tmp));
+                mysleep(myperiode);
+            }
+
+            return "Executed";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            publishMessage("lens/left/x", String.valueOf(lens_left_x));
+            publishMessage("lens/right/x", String.valueOf(lens_right_x));
+            Toast.makeText(MainActivity.this, "Vibration-mode is stopped", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            Toast.makeText(MainActivity.this, "Vibration-mode is started", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {}
+    }
 
 
 
