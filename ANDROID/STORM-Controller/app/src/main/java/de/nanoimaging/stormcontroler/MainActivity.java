@@ -3,7 +3,7 @@ package de.nanoimaging.stormcontroler;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -50,8 +50,8 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
      */
 
     MqttAndroidClient mqttAndroidClient;
-	
-	// Server uri follows the format tcp://ipaddress:port
+
+    // Server uri follows the format tcp://ipaddress:port
     final String serverUri = "tcp://192.168.43.88";
     final String mqttUser = "username";
     final String mqttPass = "pi";
@@ -63,16 +63,26 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     String TAG = "dSTORM-on-a-chieap";
 
     // MQTT Topics
-    String topic_x_left = "lens/left/x";
-    String topic_x_right = "lens/right/x";
-    String topic_z_left = "lens/left/z";
-    String topic_z_right = "lens/right/z";
-    String topic_both_vibrate = "lens/both/vibrate";
+    public static final String topic_x_left = "lens/left/x";
+    public static final String topic_x_right = "lens/right/x";
+    public static final String topic_z_left = "lens/left/z";
+    public static final String topic_z_right = "lens/right/z";
+    public static final String topic_both_vibrate = "lens/both/vibrate";
+    public static final String topic_laser_left = "laser/left/state";
+    public static final String topic_laser_right = "laser/right/state";
 
     // PWM settings
-    int seekbar_max = 1024-1; // bitrate of the PWM signal
+    int PWM_resolution = 1024 - 1; // bitrate of the PWM signal
     int myperiode = 20; // time to pause between toggling
     int myamplitude = 20; // amplitude of the lens in each periode
+
+    // Handle long-press events - want to increment by long-press
+    private boolean mAutoIncrement = false;
+    private boolean mAutoDecrement = false;
+    private Handler repeatUpdateHandler = new Handler();
+    static int REP_DELAY = 150;
+
+    String mSwitchCaseLens = "";
 
     // Seekbars
     private SeekBar seekbar_z_left;
@@ -100,36 +110,42 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     Button button_y_bwd_fine;
 
     ToggleButton button_vibrate;
+    ToggleButton button_laser_left;
+    ToggleButton button_laser_right;
 
-
-    /*
-    Button button_x_left_plus;
-    Button button_x_left_minus;
-    Button button_z_right_plus;
-    Button button_z_right_minus;
-
-    */
-    Button button_y_left_plus;
-    Button button_y_left_minus;
+    Button button_z_left_plus;
+    Button button_z_left_minus;
     Button button_x_left_plus;
     Button button_x_left_minus;
     Button button_x_right_plus;
     Button button_x_right_minus;
-    Button button_y_right_plus;
-    Button button_y_right_minus;
+    Button button_z_right_plus;
+    Button button_z_right_minus;
 
-    // Safe the state of the progress bar
-    int lens_right_x = 0;
-    int lens_right_y = 0;
-    int lens_left_y = 0;
-    int lens_left_x = 0;
-
+    // Save the state of the progress bar
+    int val_lens_x_right = 0;
+    int val_lens_z_right = 0;
+    int val_lens_z_left = 0;
+    int val_lens_x_left = 0;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_view);
+
+        class RptUpdater implements Runnable {
+            public void run() {
+                if (mAutoIncrement) {
+                    increment();
+                    repeatUpdateHandler.postDelayed(new RptUpdater(), REP_DELAY);
+                } else if (mAutoDecrement) {
+                    decrement();
+                    repeatUpdateHandler.postDelayed(new RptUpdater(), REP_DELAY);
+                }
+            }
+        }
+
 
         // Register GUI components
         lightsButtonLeft = findViewById(R.id.button_lights_left);
@@ -146,26 +162,32 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         button_vibrate = findViewById(R.id.button_vibrate);
         button_vibrate.setTextOn("Vibration: ON");
         button_vibrate.setTextOff("Vibration: OFF");
+        button_laser_left = findViewById(R.id.button_laser_left);
+        button_laser_left.setTextOn("L(l):1");
+        button_laser_left.setTextOff("L(l):1");
+        button_laser_right = findViewById(R.id.button_laser_right);
+        button_laser_right.setTextOn("L(r):1");
+        button_laser_right.setTextOff("L(r):1");
 
-        button_y_left_plus = findViewById(R.id.button_z_left_plus);
-        button_y_left_minus = findViewById(R.id.button_z_left_minus);
+        button_z_left_plus = findViewById(R.id.button_z_left_plus);
+        button_z_left_minus = findViewById(R.id.button_z_left_minus);
         button_x_left_plus = findViewById(R.id.button_x_left_plus);
         button_x_left_minus = findViewById(R.id.button_x_left_minus);
         button_x_right_plus = findViewById(R.id.button_x_right_plus);
         button_x_right_minus = findViewById(R.id.button_x_right_minus);
-        button_y_right_plus = findViewById(R.id.button_z_right_plus);
-        button_y_right_minus = findViewById(R.id.button_z_right_minus);
+        button_z_right_plus = findViewById(R.id.button_z_right_plus);
+        button_z_right_minus = findViewById(R.id.button_z_right_minus);
 
         // set seekbar and coresponding texts for GUI
-        seekbar_x_left = (SeekBar) findViewById(R.id.seekbar_x_left);
-        seekbar_z_left = (SeekBar) findViewById(R.id.seekbar_z_left);
-        seekbar_x_right = (SeekBar) findViewById(R.id.seekbar_x_right);
-        seekbar_z_right = (SeekBar) findViewById(R.id.seekbar_z_right);
+        seekbar_x_left = findViewById(R.id.seekbar_x_left);
+        seekbar_z_left = findViewById(R.id.seekbar_z_left);
+        seekbar_x_right = findViewById(R.id.seekbar_x_right);
+        seekbar_z_right = findViewById(R.id.seekbar_z_right);
 
-        seekbar_x_right.setMax(seekbar_max);
-        seekbar_z_right.setMax(seekbar_max);
-        seekbar_x_left.setMax(seekbar_max);
-        seekbar_z_left.setMax(seekbar_max);
+        seekbar_x_right.setMax(PWM_resolution);
+        seekbar_z_right.setMax(PWM_resolution);
+        seekbar_x_left.setMax(PWM_resolution);
+        seekbar_z_left.setMax(PWM_resolution);
 
         textViewXRight = findViewById(R.id.textViewXRight);
         textViewZRight = findViewById(R.id.textViewZRight);
@@ -179,10 +201,9 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         seekbar_z_left.setOnSeekBarChangeListener(this);
 
 
-
-        if(isNetworkAvailable()) {
+        if (isNetworkAvailable()) {
             initialConfig();
-        }else
+        } else
             Toast.makeText(this, R.string.no_internets, Toast.LENGTH_SHORT).show();
 
         //getCallingActivity().publish(connection, topic, message, selectedQos, retainValue);
@@ -191,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         lightsButtonLeft.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     publishMessage("lens/left/led", "1");
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     publishMessage("lens/left/led", "0");
@@ -204,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         lightsButtonRight.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     publishMessage("lens/right/led", "1");
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     publishMessage("lens/right/led", "0");
@@ -219,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         button_x_fwd_coarse.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     publishMessage("stepper/x/fwd", "10");
                 }
                 return true;
@@ -228,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         button_x_fwd_fine.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     publishMessage("stepper/x/fwd", "1");
                 }
                 return true;
@@ -237,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         button_x_bwd_coarse.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     publishMessage("stepper/x/bwd", "10");
                 }
                 return true;
@@ -246,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         button_x_bwd_fine.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     publishMessage("stepper/x/bwd", "1");
                 }
                 return true;
@@ -259,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         button_y_fwd_coarse.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     publishMessage("stepper/y/fwd", "10");
                 }
                 return true;
@@ -268,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         button_y_fwd_fine.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     publishMessage("stepper/y/fwd", "1");
                 }
                 return true;
@@ -277,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         button_y_bwd_coarse.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     publishMessage("stepper/y/bwd", "10");
                 }
                 return true;
@@ -286,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         button_y_bwd_fine.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     publishMessage("stepper/y/bwd", "1");
                 }
                 return true;
@@ -294,7 +315,8 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         });
 
 
-
+        //******************* SOFI-Mode  ********************************************//
+        // This is to let the lens vibrate by a certain amount
         button_vibrate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -309,168 +331,400 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 }
             }
 
-    });
-
-
-
-        button_y_left_plus.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lens_left_y++;
-                    updateGUI();
-                    publishMessage(topic_z_left, String.valueOf(lens_left_y));
+        });
+        //******************* Laser left ********************************************//
+        // This is to turn on the left laser
+        button_laser_left.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Log.i(TAG, "Checked");
+                    publishMessage(topic_laser_left, "1");
+                    //new vibration_process().execute("");
+                } else {
+                    is_vibration = false;
+                    publishMessage(topic_laser_left, "0");
+                    Log.i(TAG, "Not Checked");
                 }
-                return true;
+            }
+
+        });
+        //******************* Laser right ********************************************//
+        // This is to turn on the left laser
+        button_laser_right.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Log.i(TAG, "Checked");
+                    publishMessage(topic_laser_right, "1");
+                    //new vibration_process().execute("");
+                } else {
+                    is_vibration = false;
+                    publishMessage(topic_laser_right, "0");
+                    Log.i(TAG, "Not Checked");
+                }
+            }
+
+        });
+
+        //******************* Lens (left) ********************************************//
+        /*--------------------------
+        LENS Z LEFT ++
+        // Increment Lens Left in Z
+        -------------------------- */
+        button_z_left_plus.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mSwitchCaseLens = topic_z_left;
+                increment();
             }
         });
 
-        button_y_left_minus.setOnTouchListener(new View.OnTouchListener() {
-            @Override
+        button_z_left_plus.setOnLongClickListener(new View.OnLongClickListener() {
+            public boolean onLongClick(View arg0) {
+                mSwitchCaseLens = topic_z_left;
+                mAutoIncrement = true;
+                repeatUpdateHandler.post(new RptUpdater());
+                return false;
+            }
+        });
+
+        button_z_left_plus.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lens_left_y--;
-                    updateGUI();
-                    publishMessage(topic_z_left, String.valueOf(lens_left_y));
-                }
-                return true;
+                mSwitchCaseLens = topic_z_left;
+                mAutoIncrement = false;
+                return false;
+            }
+        });
+
+
+        /*--------------------------
+        LENS Z LEFT --
+        // Decrement Lens Left in Z
+        -------------------------- */
+        button_z_left_minus.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mSwitchCaseLens = topic_z_left;
+                decrement();
+            }
+        });
+
+        button_z_left_minus.setOnLongClickListener(new View.OnLongClickListener() {
+            public boolean onLongClick(View arg0) {
+                mSwitchCaseLens = topic_z_left;
+                mAutoDecrement = true;
+                repeatUpdateHandler.post(new RptUpdater());
+                return false;
+            }
+        });
+
+        button_z_left_minus.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                mSwitchCaseLens = topic_z_left;
+                mAutoDecrement = false;
+                return false;
+            }
+        });
+
+
+
+        /*--------------------------
+        LENS X LEFT ++
+        // Increment Lens Left in X
+        -------------------------- */
+        button_x_left_plus.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mSwitchCaseLens = topic_x_left;
+                increment();
+            }
+        });
+
+        button_x_left_plus.setOnLongClickListener(new View.OnLongClickListener() {
+            public boolean onLongClick(View arg0) {
+                mSwitchCaseLens = topic_x_left;
+                mAutoIncrement = true;
+                repeatUpdateHandler.post(new RptUpdater());
+                return false;
             }
         });
 
         button_x_left_plus.setOnTouchListener(new View.OnTouchListener() {
-            @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lens_left_x++;
-                    updateGUI();
-                    publishMessage(topic_x_left, String.valueOf(lens_left_x));
-                }
-                return true;
+                mSwitchCaseLens = topic_x_left;
+                mAutoIncrement = false;
+                return false;
+            }
+        });
+
+
+        /*--------------------------
+        LENS X LEFT --
+        // Decrement Lens Left in X
+        -------------------------- */
+        button_x_left_minus.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mSwitchCaseLens = topic_x_left;
+                decrement();
+            }
+        });
+
+        button_x_left_minus.setOnLongClickListener(new View.OnLongClickListener() {
+            public boolean onLongClick(View arg0) {
+                mSwitchCaseLens = topic_x_left;
+                mAutoDecrement = true;
+                repeatUpdateHandler.post(new RptUpdater());
+                return false;
             }
         });
 
         button_x_left_minus.setOnTouchListener(new View.OnTouchListener() {
-            @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lens_left_x--;
-                    updateGUI();
-                    publishMessage(topic_x_left , String.valueOf(lens_left_x));
-                }
-                return true;
+                mSwitchCaseLens = topic_x_left;
+                mAutoDecrement = false;
+                return false;
             }
         });
 
-        // incremental updates on the lenses positions by +/- buttons
-        button_x_right_plus.setOnTouchListener(new View.OnTouchListener() {
-            @Override
+
+        //******************* Lens (right) ********************************************//
+        /*--------------------------
+        LENS Z right ++
+        // Increment Lens right in Z
+        -------------------------- */
+        button_z_right_plus.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mSwitchCaseLens = topic_z_right;
+                increment();
+            }
+        });
+
+        button_z_right_plus.setOnLongClickListener(new View.OnLongClickListener() {
+            public boolean onLongClick(View arg0) {
+                mSwitchCaseLens = topic_z_right;
+                mAutoIncrement = true;
+                repeatUpdateHandler.post(new RptUpdater());
+                return false;
+            }
+        });
+
+        button_z_right_plus.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lens_right_x++;
-                    updateGUI();
-                    publishMessage(topic_x_right, String.valueOf(lens_right_x));
-                }
-                return true;
+                mSwitchCaseLens = topic_z_right;
+                mAutoIncrement = false;
+                return false;
+            }
+        });
+
+
+        /*--------------------------
+        LENS Z right --
+        // Decrement Lens right in Z
+        -------------------------- */
+        button_z_right_minus.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mSwitchCaseLens = topic_z_right;
+                decrement();
+            }
+        });
+
+        button_z_right_minus.setOnLongClickListener(new View.OnLongClickListener() {
+            public boolean onLongClick(View arg0) {
+                mSwitchCaseLens = topic_z_right;
+                mAutoDecrement = true;
+                repeatUpdateHandler.post(new RptUpdater());
+                return false;
+            }
+        });
+
+        button_z_right_minus.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                mSwitchCaseLens = topic_z_right;
+                mAutoDecrement = false;
+                return false;
+            }
+        });
+
+
+
+        /*--------------------------
+        LENS X right ++
+        // Increment Lens right in X
+        -------------------------- */
+        button_x_right_plus.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mSwitchCaseLens = topic_x_right;
+                increment();
+            }
+        });
+
+        button_x_right_plus.setOnLongClickListener(new View.OnLongClickListener() {
+            public boolean onLongClick(View arg0) {
+                mSwitchCaseLens = topic_x_right;
+                mAutoIncrement = true;
+                repeatUpdateHandler.post(new RptUpdater());
+                return false;
+            }
+        });
+
+        button_x_right_plus.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                mSwitchCaseLens = topic_x_right;
+                mAutoIncrement = false;
+                return false;
+            }
+        });
+
+
+        /*--------------------------
+        LENS X right --
+        // Decrement Lens right in X
+        -------------------------- */
+        button_x_right_minus.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mSwitchCaseLens = topic_x_right;
+                decrement();
+            }
+        });
+
+        button_x_right_minus.setOnLongClickListener(new View.OnLongClickListener() {
+            public boolean onLongClick(View arg0) {
+                mSwitchCaseLens = topic_x_right;
+                mAutoDecrement = true;
+                repeatUpdateHandler.post(new RptUpdater());
+                return false;
             }
         });
 
         button_x_right_minus.setOnTouchListener(new View.OnTouchListener() {
-            @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lens_right_x--;
-                    updateGUI();
-                    publishMessage(topic_x_right, String.valueOf(lens_right_x));
-                }
-                return true;
+                mSwitchCaseLens = topic_x_right;
+                mAutoDecrement = false;
+                return false;
             }
         });
-
-        button_y_right_plus.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lens_right_y++;
-                    updateGUI();
-                    publishMessage(topic_z_left, String.valueOf(lens_right_y));
-                }
-                return true;
-            }
-        });
-
-        button_y_right_minus.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    lens_right_y--;
-                    updateGUI();
-                    publishMessage(topic_z_right, String.valueOf(lens_right_y));
-                }
-                return true;
-            }
-        });
-
-
     }
 
+
+    public void decrement() {
+        switch (mSwitchCaseLens) {
+            case topic_z_left:
+                if (val_lens_z_left>0) {
+                    val_lens_z_left--;
+                    publishMessage(topic_z_left, String.valueOf(val_lens_z_left));
+                    break;
+                }
+        }
+        switch (mSwitchCaseLens) {
+            case topic_x_left:
+                if (val_lens_x_left>0) {
+                    val_lens_x_left--;
+                    publishMessage(topic_x_left, String.valueOf(val_lens_x_left));
+                    break;
+                }
+        }
+        switch (mSwitchCaseLens) {
+            case topic_z_right:
+                if (val_lens_z_right>0) {
+                    val_lens_z_right--;
+                    publishMessage(topic_z_right, String.valueOf(val_lens_z_right));
+                    break;
+                }
+        }
+        switch (mSwitchCaseLens) {
+            case topic_x_right:
+                if (val_lens_x_right>0) {
+                    val_lens_x_right--;
+                    publishMessage(topic_x_right, String.valueOf(val_lens_x_right));
+                    break;
+                }
+        }
+        updateGUI();
+    }
+
+    
+    public void increment() {
+        switch (mSwitchCaseLens) {
+            case topic_z_left:
+                if (val_lens_z_left<PWM_resolution) {
+                    val_lens_z_left++;
+                    publishMessage(topic_z_left, String.valueOf(val_lens_z_left));
+                    break;
+                }
+        }
+        switch (mSwitchCaseLens) {
+            case topic_x_left:
+                if (val_lens_x_left<PWM_resolution) {
+                val_lens_x_left++;
+                publishMessage(topic_x_left, String.valueOf(val_lens_x_left));
+                break;
+                }
+        }
+        switch (mSwitchCaseLens) {
+            case topic_z_right:
+                if (val_lens_z_right<PWM_resolution) {
+                    val_lens_z_right++;
+                    publishMessage(topic_z_right, String.valueOf(val_lens_z_right));
+                    break;
+                }
+        }
+        switch (mSwitchCaseLens) {
+            case topic_x_right:
+                if (val_lens_x_right<PWM_resolution) {
+                    val_lens_x_right++;
+                    publishMessage(topic_x_right, String.valueOf(val_lens_x_right));
+                    break;
+                }
+        }
+        updateGUI();
+    }
+
+
     @Override
-    public void onProgressChanged(SeekBar bar, int progress, boolean fromUser)
-    {
+    public void onProgressChanged(SeekBar bar, int progress, boolean fromUser) {
         /*
         if (bar.equals(seekbar_x_left)) {
             // For left Lens in X
-            lens_left_x = progress;
+            val_lens_x_left = progress;
             updateGUI();
             publishMessage("lens/left/x", String.valueOf(progress));
         }
         */
-        if (bar.equals(seekbar_z_left))
-        {
+        if (bar.equals(seekbar_z_left)) {
             // For left Lens in Y
-            lens_left_y = progress;
+            val_lens_z_left = progress;
             updateGUI();
             publishMessage(topic_z_left, String.valueOf(progress));
-        }
-        else if (bar.equals(seekbar_x_left))
-        {
+        } else if (bar.equals(seekbar_x_left)) {
             // For left Lens in Z
-            lens_left_x = progress;
+            val_lens_x_left = progress;
             updateGUI();
             publishMessage(topic_x_left, String.valueOf(progress));
-        }
-        else if (bar.equals(seekbar_x_right))
-        {
+        } else if (bar.equals(seekbar_x_right)) {
             // For right Lens in X
-            lens_right_x = progress;
+            val_lens_x_right = progress;
             updateGUI();
             publishMessage(topic_x_right, String.valueOf(progress));
-        }
-        else if (bar.equals(seekbar_z_right))
-        {
+        } else if (bar.equals(seekbar_z_right)) {
             // For right Lens in Y
-            lens_right_y = progress;
+            val_lens_z_right = progress;
             updateGUI();
             publishMessage(topic_z_right, String.valueOf(progress));
         }
 
     }
 
-    public void updateGUI(){
+    public void updateGUI() {
 
-        textViewXRight.setText("LX (right): "+String.valueOf(lens_right_x));
-        seekbar_x_right.setProgress(lens_right_x);
+        textViewXRight.setText("LX (r): " + String.valueOf(val_lens_x_right));
+        seekbar_x_right.setProgress(val_lens_x_right);
 
-        textViewZLeft.setText("Ly (left): "+String.valueOf(lens_left_y));
-        seekbar_z_left.setProgress(lens_left_y);
+        textViewZLeft.setText("LZ (l): " + String.valueOf(val_lens_z_left));
+        seekbar_z_left.setProgress(val_lens_z_left);
 
-        textViewZRight.setText("LY (right): "+String.valueOf(lens_right_y));
-        seekbar_z_right.setProgress(lens_right_y);
+        textViewZRight.setText("LZ (r): " + String.valueOf(val_lens_z_right));
+        seekbar_z_right.setProgress(val_lens_z_right);
 
-        textViewXLeft.setText("LY (right): "+String.valueOf(lens_left_x));
-        seekbar_x_left.setProgress(lens_left_x);
+        textViewXLeft.setText("LX (l): " + String.valueOf(val_lens_x_left));
+        seekbar_x_left.setProgress(val_lens_x_left);
 
     }
-
 
 
     @Override
@@ -483,7 +737,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
     }
 
-    private void initialConfig(){
+    private void initialConfig() {
         mqttAndroidClient = new MqttAndroidClient(getApplicationContext(), serverUri, clientId);
         mqttAndroidClient.setCallback(new MqttCallbackExtended() {
             @Override
@@ -549,7 +803,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             });
 
 
-        } catch (MqttException ex){
+        } catch (MqttException ex) {
             ex.printStackTrace();
         }
     }
@@ -562,8 +816,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     }
 
 
-
-    public void publishMessage(String pub_topic, String publishMessage){
+    public void publishMessage(String pub_topic, String publishMessage) {
 
         Log.d(TAG, pub_topic + " " + publishMessage);
         try {
@@ -571,7 +824,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             message.setPayload(publishMessage.getBytes());
             mqttAndroidClient.publish(pub_topic, message);
             //addToHistory("Message Published");
-            if(!mqttAndroidClient.isConnected()){
+            if (!mqttAndroidClient.isConnected()) {
                 //addToHistory(mqttAndroidClient.getBufferedMessageCount() + " messages in buffer.");
             }
         } catch (MqttException e) {
@@ -580,60 +833,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             e.printStackTrace();
         }
     }
-
-
-
-    private class vibration_process extends AsyncTask<String, Void, String> {
-
-        int lens_left_x_tmp =  lens_left_x;
-        int lens_right_x_tmp =  lens_right_x;
-
-        void mysleep(int sleeptime){
-            try {
-                Thread.sleep(sleeptime);
-            } catch (InterruptedException e) {
-                Thread.interrupted();
-            }
-        }
-        @Override
-        protected String doInBackground(String... params) {
-            while(is_vibration){
-
-                lens_left_x_tmp = lens_left_x_tmp+myamplitude;
-                lens_right_x_tmp = lens_right_x_tmp+myamplitude;
-
-                publishMessage("lens/left/x", String.valueOf(lens_left_x_tmp));
-                publishMessage("lens/right/x", String.valueOf(lens_right_x_tmp));
-                mysleep(myperiode);
-
-                lens_left_x_tmp = lens_left_x_tmp-myamplitude;
-                lens_right_x_tmp = lens_right_x_tmp-myamplitude;
-
-                publishMessage("lens/left/x", String.valueOf(lens_left_x_tmp));
-                publishMessage("lens/right/x", String.valueOf(lens_right_x_tmp));
-                mysleep(myperiode);
-            }
-
-            return "Executed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            publishMessage("lens/left/x", String.valueOf(lens_left_x));
-            publishMessage("lens/right/x", String.valueOf(lens_right_x));
-            Toast.makeText(MainActivity.this, "Vibration-mode is stopped", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        protected void onPreExecute() {
-            Toast.makeText(MainActivity.this, "Vibration-mode is started", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {}
-    }
-
-
 
 
 }

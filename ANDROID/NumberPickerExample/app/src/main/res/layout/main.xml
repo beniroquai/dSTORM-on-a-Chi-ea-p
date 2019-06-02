@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/MainLayout"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center_vertical|center_horizontal">
+    
+		<net.technologichron.android.control.NumberPicker
+			android:id="@+id/Picker1"
+    		android:orientation="vertical"
+    		android:layout_width="wrap_content"
+    		android:layout_height="wrap_content">
+		</net.technologichron.android.control.NumberPicker>
+
+		<net.technologichron.android.control.NumberPicker
+			android:id="@+id/Picker1"
+    		android:orientation="horizontal"
+    		android:layout_width="wrap_content"
+    		android:layout_height="wrap_content">
+		</net.technologichron.android.control.NumberPicker>
+
+
+</LinearLayout>

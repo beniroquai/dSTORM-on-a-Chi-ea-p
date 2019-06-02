@@ -23,20 +23,22 @@ PubSubClient client(espClient);
 /*LED GPIO pin*/
 const char led = 2;
 
-///* topics */
+///* topics - DON'T FORGET TO REGISTER THEM! */
 #define LED_TOPIC     "lens/left/led"
 #define LENS_XR_TOPIC     "lens/right/x"
 #define LENS_ZR_TOPIC     "lens/right/z"
 #define LENS_XL_TOPIC     "lens/left/x"
 #define LENS_ZL_TOPIC     "lens/left/z"
 #define LENS_VIBRATE      "lens/both/vibrate"
+#define LASER_LEFT        "laser/left/state"
+#define LASER_RIGHT       "laser/right/state"
 
 #define CLIENT_ID "ESP32Client";
 
 // global switch for vibrating the lenses
-int sofi_periode = 1;  // ms
+int sofi_periode = 10;  // ms
 int sofi_state = false;   // is sofi turned on?
-int sofi_amplitude = 20;   // how many steps +/- ?
+int sofi_amplitude = 1;   // how many steps +/- ?
 
 // default values for x/z lens' positions
 int lens_xl_int = 0;
@@ -44,8 +46,12 @@ int lens_zl_int = 0;
 int lens_xr_int = 0;
 int lens_zr_int = 0;
 
+// Laser-Stuff
+int pin_laser_left = 12;
+int pin_laser_right = 13;
+
 // PWM Stuff
-int pwm_resolution = 10;
+int pwm_resolution = 15;
 int pwm_frequency = 800000;//19000; //12000
 
 // right x-channel
@@ -69,32 +75,21 @@ long lastMsg = 0;
 char msg[20];
 
 void setup() {
-  Serial.begin(115200);
-  // We start by connecting to a WiFi network
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
 
-  WiFi.begin(ssid, password);
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  /* set led as output to control led on-off */
+  /* set led and laser as output to control led on-off */
   pinMode(led, OUTPUT);
-
-  Serial.println("");
-  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
-
-  /* configure the MQTT server with IPaddress and port */
-  client.setServer(mqtt_server, 1883);
-  /* this receivedCallback function will be invoked
-    when client received subscribed topic */
-  client.setCallback(receivedCallback);
-
+  pinMode(pin_laser_left, OUTPUT);
+  pinMode(pin_laser_right, OUTPUT);
+  
+  // Reset the LAsers to zero
+  digitalWrite(pin_laser_left, LOW);
+  digitalWrite(pin_laser_right, LOW);
+  
+  // Visualize, that ESP is on!
+  digitalWrite(led, HIGH);
+  delay(500);
+  digitalWrite(led, LOW);
+  
   /* setup the PWM ports and reset them to 0*/
   ledcSetup(1, pwm_frequency, pwm_resolution);
   ledcAttachPin(pwmpin_xr, pwm_channel_xr);
@@ -111,6 +106,34 @@ void setup() {
   ledcSetup(4, pwm_frequency , pwm_resolution);
   ledcAttachPin(pwmpin_zl, pwm_channel_zl);
   ledcWrite(pwm_channel_zl, 0);
+
+
+
+  Serial.begin(115200);
+  // We start by connecting to a WiFi network
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  /* configure the MQTT server with IPaddress and port */
+  client.setServer(mqtt_server, 1883);
+  /* this receivedCallback function will be invoked
+    when client received subscribed topic */
+  client.setCallback(receivedCallback);
+
 }
 
 void loop() {
@@ -122,13 +145,22 @@ void loop() {
     subscribed topic-process-invoke receivedCallback */
   client.loop();
 
+  // if true, we want to vibrate both lenses along x
   if (sofi_state) {
-    // if true, we want to vibrate both lenses along x
+    // if value is too small, lens toggles in wrong direction => add some value!
+    if(lens_xr_int - sofi_amplitude / 2) lens_xr_int += sofi_amplitude / 2;
+    if(lens_xl_int - sofi_amplitude / 2) lens_xl_int += sofi_amplitude / 2;
+    
+    // move lens in plus-direction
     ledcWrite(pwm_channel_xr, lens_xr_int + sofi_amplitude / 2);
-    ledcWrite(pwm_channel_xl, lens_xl_int + sofi_periode / 2);
+    ledcWrite(pwm_channel_xl, lens_xl_int + sofi_amplitude / 2);
+    digitalWrite(led, HIGH);
     delay(sofi_periode);
+    
+    // move lens in plus-direction
     ledcWrite(pwm_channel_xr, lens_xr_int - sofi_amplitude / 2);
-    ledcWrite(pwm_channel_xl, lens_xl_int - sofi_periode / 2);
+    ledcWrite(pwm_channel_xl, lens_xl_int - sofi_amplitude / 2);
+    digitalWrite(led, LOW);
     delay(sofi_periode);
   }
 }
@@ -158,7 +190,7 @@ void receivedCallback(char* topic, byte* payload, unsigned int length) {
 
 
 
-
+  // Just for debugging 
   if (String(topic) == LED_TOPIC)  {
     /* we got '1' -> on */
     if (payload_int == 1) {
@@ -168,7 +200,27 @@ void receivedCallback(char* topic, byte* payload, unsigned int length) {
       digitalWrite(led, LOW);
     }
   }
-
+  // SWitch on left laser
+  if (String(topic) == LASER_LEFT)  {
+    /* we got '1' -> on */
+    if (payload_int == 1) {
+      digitalWrite(pin_laser_left, HIGH);
+    } else {
+      /* we got '0' -> on */
+      digitalWrite(pin_laser_left, LOW);
+    }
+  }
+  // SWitch on right laser
+  if (String(topic) == LASER_RIGHT)  {
+    /* we got '1' -> on */
+    if (payload_int == 1) {
+      digitalWrite(pin_laser_right, HIGH);
+    } else {
+      /* we got '0' -> on */
+      digitalWrite(pin_laser_right, LOW);
+    }
+  }
+  
   // Catch the value for movement of lens in X-direction (right)
   if (String(topic) == LENS_XR_TOPIC) {
     //dacWrite(25, (int)payload_int);
@@ -210,6 +262,7 @@ void receivedCallback(char* topic, byte* payload, unsigned int length) {
 
   // Catch the value for starting the vibration mode
   if (String(topic) == LENS_VIBRATE) {
+    
     /* we got '1' -> on */
     if (payload_int == 1) {
       sofi_state = true;
@@ -241,7 +294,10 @@ void mqttconnect() {
       client.subscribe(LENS_ZR_TOPIC);
       client.subscribe(LENS_XL_TOPIC);
       client.subscribe(LENS_ZL_TOPIC);
-
+      client.subscribe(LENS_VIBRATE);
+      client.subscribe(LASER_LEFT);
+      client.subscribe(LASER_RIGHT);
+      
     } else {
       Serial.print("failed, status code =");
       Serial.print(client.state());

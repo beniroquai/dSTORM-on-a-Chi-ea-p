@@ -27,40 +27,6 @@
     </LinearLayout>
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textViewZLeft"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Y (L)"
-            android:textSize="8pt" />
-
-        <Button
-            android:id="@+id/button_z_left_minus"
-            android:layout_width="13pt"
-            android:layout_height="24pt"
-            android:layout_weight="1"
-            android:text="-" />
-
-        <SeekBar
-            android:id="@+id/seekbar_z_left"
-            android:layout_width="50pt"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:max="65535" />
-
-        <Button
-            android:id="@+id/button_z_left_plus"
-            android:layout_width="13pt"
-            android:layout_height="24pt"
-            android:layout_weight="1"
-            android:text="+" />
-    </LinearLayout>
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -71,13 +37,13 @@
             android:id="@+id/textViewXLeft"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="X (L)"
+            android:text="LX (l)"
             android:textSize="8pt" />
 
         <Button
             android:id="@+id/button_x_left_minus"
             android:layout_width="13pt"
-            android:layout_height="24pt"
+            android:layout_height="34pt"
             android:layout_weight="1"
             android:text="-" />
 
@@ -91,10 +57,47 @@
         <Button
             android:id="@+id/button_x_left_plus"
             android:layout_width="13pt"
-            android:layout_height="24pt"
+            android:layout_height="34pt"
             android:layout_weight="1"
             android:text="+" />
     </LinearLayout>
+    
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textViewZLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LZ (l)"
+            android:textSize="8pt" />
+
+        <Button
+            android:id="@+id/button_z_left_minus"
+            android:layout_width="13pt"
+            android:layout_height="34pt"
+            android:layout_weight="1"
+            android:text="-" />
+
+        <SeekBar
+            android:id="@+id/seekbar_z_left"
+            android:layout_width="50pt"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:max="65535" />
+
+        <Button
+            android:id="@+id/button_z_left_plus"
+            android:layout_width="13pt"
+            android:layout_height="34pt"
+            android:layout_weight="1"
+            android:text="+" />
+    </LinearLayout>
+
+
 
     <Space
         android:layout_width="match_parent"
@@ -112,13 +115,13 @@
             android:id="@+id/textViewXRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="X (R)"
+            android:text="LX (r)"
             android:textSize="8pt" />
 
         <Button
             android:id="@+id/button_x_right_minus"
             android:layout_width="13pt"
-            android:layout_height="24pt"
+            android:layout_height="34pt"
             android:layout_weight="1"
             android:text="-" />
 
@@ -132,7 +135,7 @@
         <Button
             android:id="@+id/button_x_right_plus"
             android:layout_width="13pt"
-            android:layout_height="24pt"
+            android:layout_height="34pt"
             android:layout_weight="1"
             android:text="+" />
     </LinearLayout>
@@ -146,13 +149,13 @@
             android:id="@+id/textViewZRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Y (R)"
+            android:text="LZ (r)"
             android:textSize="8pt" />
 
         <Button
             android:id="@+id/button_z_right_minus"
             android:layout_width="13pt"
-            android:layout_height="24pt"
+            android:layout_height="34pt"
             android:layout_weight="1"
             android:text="-" />
 
@@ -166,7 +169,7 @@
         <Button
             android:id="@+id/button_z_right_plus"
             android:layout_width="13pt"
-            android:layout_height="24pt"
+            android:layout_height="34pt"
             android:layout_weight="1"
             android:text="+" />
     </LinearLayout>
@@ -179,28 +182,28 @@
         <Button
             android:id="@+id/button_x_fwd_coarse"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="24pt"
             android:enabled="true"
             android:text="X++" />
 
         <Button
             android:id="@+id/button_x_fwd_fine"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="24pt"
             android:enabled="true"
             android:text="X+" />
 
         <Button
             android:id="@+id/button_x_bwd_fine"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="24pt"
             android:enabled="true"
             android:text="X-" />
 
         <Button
             android:id="@+id/button_x_bwd_coarse"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="24pt"
             android:enabled="true"
             android:text="X--" />
 
@@ -214,32 +217,33 @@
         <Button
             android:id="@+id/button_y_fwd_coarse"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="24pt"
             android:enabled="true"
             android:text="Y++" />
 
         <Button
             android:id="@+id/button_y_fwd_fine"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="24pt"
             android:enabled="true"
             android:text="Y+" />
 
         <Button
             android:id="@+id/button_y_bwd_fine"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="24pt"
             android:enabled="true"
             android:text="Y-" />
 
         <Button
             android:id="@+id/button_y_bwd_coarse"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="24pt"
             android:enabled="true"
             android:text="Y--" />
 
     </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -260,13 +264,28 @@
                 android:textSize="8pt" />
 
             <ToggleButton
-                android:id="@+id/button_vibrate"
-                android:layout_width="100pt"
+            android:id="@+id/button_vibrate"
+            android:layout_width="50pt"
+            android:layout_height="25pt"
+            android:checked="false"
+            android:text="SOFI" />
+
+            <ToggleButton
+                android:id="@+id/button_laser_left"
+                android:layout_width="50pt"
                 android:layout_height="25pt"
                 android:checked="false"
-                android:text="ToggleButton" />
+                android:text="L(l)" />
+
+            <ToggleButton
+                android:id="@+id/button_laser_right"
+                android:layout_width="50pt"
+                android:layout_height="25pt"
+                android:checked="false"
+                android:text="L(2)" />
         </LinearLayout>
 
+        <!--
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -311,8 +330,9 @@
                 android:inputType="number"
                 android:text="100" />
         </LinearLayout>
-
+-->
     </LinearLayout>
+
 
 
 </LinearLayout>
