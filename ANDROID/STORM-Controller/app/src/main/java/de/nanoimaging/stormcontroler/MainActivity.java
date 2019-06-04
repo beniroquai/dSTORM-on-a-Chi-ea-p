@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     public static final String topic_laser_right = "laser/right/state";
 
     // PWM settings
-    int PWM_resolution = 1024 - 1; // bitrate of the PWM signal
+    int PWM_resolution = 32768 - 1; // bitrate of the PWM signal
     int myperiode = 20; // time to pause between toggling
     int myamplitude = 20; // amplitude of the lens in each periode
 
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     Button button_y_bwd_coarse;
     Button button_y_bwd_fine;
 
-    ToggleButton button_vibrate;
+    ToggleButton button_sofi;
     ToggleButton button_laser_left;
     ToggleButton button_laser_right;
 
@@ -127,6 +127,10 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     int val_lens_z_right = 0;
     int val_lens_z_left = 0;
     int val_lens_x_left = 0;
+
+    boolean state_sofi = false;
+    boolean state_laser_left = false;
+    boolean isState_laser_right = false;
 
 
     @Override
@@ -159,16 +163,24 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         button_y_fwd_fine = findViewById(R.id.button_y_fwd_fine);
         button_y_bwd_coarse = findViewById(R.id.button_y_bwd_coarse);
         button_y_bwd_fine = findViewById(R.id.button_y_bwd_fine);
-        button_vibrate = findViewById(R.id.button_vibrate);
-        button_vibrate.setTextOn("Vibration: ON");
-        button_vibrate.setTextOff("Vibration: OFF");
+
+        // toggle buttons
+        button_sofi = findViewById(R.id.button_vibrate);
+        button_sofi.setText("SOFI: 0");
+        button_sofi.setTextOn("SOFI: 1");
+        button_sofi.setTextOff("SOFI: 0");
+
         button_laser_left = findViewById(R.id.button_laser_left);
         button_laser_left.setTextOn("L(l):1");
         button_laser_left.setTextOff("L(l):1");
+        button_laser_left.setText("L(l):1");
+
         button_laser_right = findViewById(R.id.button_laser_right);
         button_laser_right.setTextOn("L(r):1");
         button_laser_right.setTextOff("L(r):1");
+        button_laser_right.setText("L(r):1");
 
+        // simple buttons
         button_z_left_plus = findViewById(R.id.button_z_left_plus);
         button_z_left_minus = findViewById(R.id.button_z_left_minus);
         button_x_left_plus = findViewById(R.id.button_x_left_plus);
@@ -317,7 +329,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
         //******************* SOFI-Mode  ********************************************//
         // This is to let the lens vibrate by a certain amount
-        button_vibrate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        button_sofi.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     Log.i(TAG, "Checked");
@@ -599,6 +611,10 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 return false;
             }
         });
+
+
+        // set gui
+        updateGUI();
     }
 
 
@@ -711,17 +727,17 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     }
 
     public void updateGUI() {
-
-        textViewXRight.setText("LX (r): " + String.valueOf(val_lens_x_right));
+        // Update all slides if value has been changed
+        textViewXRight.setText("LX (r): " + String.format("%05d", val_lens_x_right));
         seekbar_x_right.setProgress(val_lens_x_right);
 
-        textViewZLeft.setText("LZ (l): " + String.valueOf(val_lens_z_left));
+        textViewZLeft.setText("LZ (l): " + String.format("%05d", val_lens_z_left));
         seekbar_z_left.setProgress(val_lens_z_left);
 
-        textViewZRight.setText("LZ (r): " + String.valueOf(val_lens_z_right));
+        textViewZRight.setText("LZ (r): " + String.format("%05d", val_lens_z_right));
         seekbar_z_right.setProgress(val_lens_z_right);
 
-        textViewXLeft.setText("LX (l): " + String.valueOf(val_lens_x_left));
+        textViewXLeft.setText("LX (l): " + String.format("%05d", val_lens_x_left));
         seekbar_x_left.setProgress(val_lens_x_left);
 
     }

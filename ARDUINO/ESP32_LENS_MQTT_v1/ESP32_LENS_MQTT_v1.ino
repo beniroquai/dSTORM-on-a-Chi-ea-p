@@ -22,6 +22,9 @@ PubSubClient client(espClient);
 
 /*LED GPIO pin*/
 const char led = 2;
+// Laser-Stuff
+int pin_laser_left = 12;
+int pin_laser_right = 14;
 
 ///* topics - DON'T FORGET TO REGISTER THEM! */
 #define LED_TOPIC     "lens/left/led"
@@ -46,9 +49,7 @@ int lens_zl_int = 0;
 int lens_xr_int = 0;
 int lens_zr_int = 0;
 
-// Laser-Stuff
-int pin_laser_left = 12;
-int pin_laser_right = 13;
+
 
 // PWM Stuff
 int pwm_resolution = 15;
