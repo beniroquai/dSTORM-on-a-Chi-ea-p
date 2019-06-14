@@ -3,7 +3,6 @@
   2/ control led on-off
   So it willpublish temperature topic and scribe topic bulb on/off
 */
-
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <Stepper.h>
@@ -30,9 +29,10 @@ const char led = 2;
 // create an instance of the stepper class, specifying
 // the number of steps of the motor and the pins it's
 // attached to
-Stepper STP_X(STEPS,23,22,21,19);
-Stepper STP_Y(STEPS,26,25,32,33);
-
+//Stepper STP_X(STEPS,23,22,21,19);
+//Stepper STP_Y(STEPS,26,25,32,33);
+Stepper STP_X(STEPS,13,12,14,27);
+Stepper STP_Y(STEPS,26,25,23,32);
 
 ///* topics */
 #define LED_TOPIC     "lens/left/led"
@@ -41,7 +41,7 @@ Stepper STP_Y(STEPS,26,25,32,33);
 #define STEPPER_Y_FWD     "stepper/y/fwd"
 #define STEPPER_Y_BWD     "stepper/y/bwd"
 
-#define CLIENT_ID "ESP32Client_motor";
+#define CLIENT_ID "ESP32Client_motor2";
 
 long lastMsg = 0;
 char msg[20];
@@ -79,7 +79,7 @@ void receivedCallback(char* topic, byte* payload, unsigned int length) {
 
   // Catch the value for stepment of lens in X-direction
   if (String(topic) == STEPPER_X_FWD) {
-    STP_X.step((int)payload_int);
+    STP_X.step((int)payload_int*10);
     Serial.print("Motor is running in x for: ");
     Serial.print((int)payload_int);
     Serial.println();
@@ -87,7 +87,7 @@ void receivedCallback(char* topic, byte* payload, unsigned int length) {
 
   // Catch the value for stepment of lens in Y-direction
   if (String(topic) == STEPPER_X_BWD) {
-    STP_X.step(-(int)payload_int);
+    STP_X.step(-(int)payload_int*10);
     Serial.print("Motor is running in x for: ");
     Serial.print((int)payload_int);
     Serial.println();
@@ -95,7 +95,7 @@ void receivedCallback(char* topic, byte* payload, unsigned int length) {
 
     // Catch the value for stepment of lens in Y-direction
   if (String(topic) == STEPPER_Y_FWD) {
-    STP_Y.step((int)payload_int);
+    STP_Y.step((int)payload_int*10);
     Serial.print("Motor is running in y for: ");
     Serial.print((int)payload_int);
     Serial.println();
@@ -103,7 +103,7 @@ void receivedCallback(char* topic, byte* payload, unsigned int length) {
 
   // Catch the value for stepment of lens in Y-direction
   if (String(topic) == STEPPER_Y_BWD) {
-    STP_Y.step(-(int)payload_int);
+    STP_Y.step(-(int)payload_int*10);
     Serial.print("Motor is running in y for: ");
     Serial.print((int)payload_int);
     Serial.println();

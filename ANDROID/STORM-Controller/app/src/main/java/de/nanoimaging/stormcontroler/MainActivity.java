@@ -70,11 +70,17 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     public static final String topic_both_vibrate = "lens/both/vibrate";
     public static final String topic_laser_left = "laser/left/state";
     public static final String topic_laser_right = "laser/right/state";
+    public static final String topic_stepper_y_fwd = "stepper/y/fwd";
+    public static final String topic_stepper_y_bwd = "stepper/y/fwd";
+    public static final String topic_stepper_x_fwd = "stepper/x/fwd";
+    public static final String topic_stepper_x_bwd = "stepper/x/fwd";
 
     // PWM settings
     int PWM_resolution = 32768 - 1; // bitrate of the PWM signal
     int myperiode = 20; // time to pause between toggling
     int myamplitude = 20; // amplitude of the lens in each periode
+    int coarse_increment = 20; // steps for ++/--
+
 
     // Handle long-press events - want to increment by long-press
     private boolean mAutoIncrement = false;
@@ -121,6 +127,15 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     Button button_x_right_minus;
     Button button_z_right_plus;
     Button button_z_right_minus;
+    Button button_z_left_plus2;
+    Button button_z_left_minus2;
+    Button button_x_left_plus2;
+    Button button_x_left_minus2;
+    Button button_x_right_plus2;
+    Button button_x_right_minus2;
+    Button button_z_right_plus2;
+    Button button_z_right_minus2;
+
 
     // Save the state of the progress bar
     int val_lens_x_right = 0;
@@ -153,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
         // Register GUI components
         lightsButtonLeft = findViewById(R.id.button_lights_left);
-        lightsButtonRight = findViewById(R.id.button_lights_right);
+        //lightsButtonRight = findViewById(R.id.button_lights_right);
 
         button_x_fwd_coarse = findViewById(R.id.button_x_fwd_coarse);
         button_x_fwd_fine = findViewById(R.id.button_x_fwd_fine);
@@ -189,6 +204,15 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         button_x_right_minus = findViewById(R.id.button_x_right_minus);
         button_z_right_plus = findViewById(R.id.button_z_right_plus);
         button_z_right_minus = findViewById(R.id.button_z_right_minus);
+
+        button_z_left_plus2 = findViewById(R.id.button_z_left_plus2);
+        button_z_left_minus2 = findViewById(R.id.button_z_left_minus2);
+        button_x_left_plus2 = findViewById(R.id.button_x_left_plus2);
+        button_x_left_minus2 = findViewById(R.id.button_x_left_minus2);
+        button_x_right_plus2 = findViewById(R.id.button_x_right_plus2);
+        button_x_right_minus2 = findViewById(R.id.button_x_right_minus2);
+        button_z_right_plus2 = findViewById(R.id.button_z_right_plus2);
+        button_z_right_minus2 = findViewById(R.id.button_z_right_minus2);
 
         // set seekbar and coresponding texts for GUI
         seekbar_x_left = findViewById(R.id.seekbar_x_left);
@@ -233,16 +257,142 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 return true;
             }
         });
-        // this goes wherever you setup your button listener:
-        lightsButtonRight.setOnTouchListener(new View.OnTouchListener() {
+
+
+
+
+
+        //******************* Coarse Lens movements (LEFT ONLY) ********************************//
+        button_z_left_plus2.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    publishMessage("lens/right/led", "1");
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    publishMessage("lens/right/led", "0");
+                    val_lens_z_left = val_lens_z_left + coarse_increment;
+                    publishMessage(topic_z_left, String.valueOf(val_lens_z_left));
+                    updateGUI();
                 }
+                return true;
+            }
+        });
+        button_x_left_plus2.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    val_lens_x_left = val_lens_x_left + coarse_increment;
+                    publishMessage(topic_x_left, String.valueOf(val_lens_x_left));
+                    updateGUI();
+                }
+                return true;
+            }
+        });
+        button_z_left_minus2.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    val_lens_z_left = val_lens_z_left - coarse_increment;
+                    publishMessage(topic_z_left, String.valueOf(val_lens_z_left));
+                    updateGUI();
+                }
+                return true;
+            }
+        });
+        button_x_left_minus2.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    val_lens_x_left = val_lens_x_left - coarse_increment;
+                    publishMessage(topic_x_left, String.valueOf(val_lens_x_left));
+                    updateGUI();
+                }
+                return true;
+            }
+        });
 
+
+        //******************* Coarse Lens movements (LEFT ONLY) ********************************//
+        button_z_right_plus2.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    val_lens_z_right = val_lens_z_right + coarse_increment;
+                    publishMessage(topic_z_right, String.valueOf(val_lens_z_right));
+                    updateGUI();
+                }
+                return true;
+            }
+        });
+        button_x_right_plus2.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    val_lens_x_right = val_lens_x_right + coarse_increment;
+                    publishMessage(topic_x_right, String.valueOf(val_lens_x_right));
+                    updateGUI();
+                }
+                return true;
+            }
+        });
+        button_z_right_minus2.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    val_lens_z_right = val_lens_z_right - coarse_increment;
+                    publishMessage(topic_z_right, String.valueOf(val_lens_z_right));
+                    updateGUI();
+                }
+                return true;
+            }
+        });
+        button_x_right_minus2.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    val_lens_x_right = val_lens_x_right - coarse_increment;
+                    publishMessage(topic_x_right, String.valueOf(val_lens_x_right));
+                    updateGUI();
+                }
+                return true;
+            }
+        });
+
+
+
+
+        //******************* STEPPER in Y-Direction ********************************************//
+        // this goes wherever you setup your button listener:
+        button_y_fwd_coarse.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    publishMessage(topic_stepper_y_fwd, "10");
+                }
+                return true;
+            }
+        });
+        button_y_fwd_fine.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    publishMessage(topic_stepper_y_fwd, "1");
+                }
+                return true;
+            }
+        });
+        button_y_bwd_coarse.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    publishMessage(topic_stepper_y_bwd, "10");
+                }
+                return true;
+            }
+        });
+        button_y_bwd_fine.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    publishMessage(topic_stepper_y_bwd, "1");
+                }
                 return true;
             }
         });
@@ -253,7 +403,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    publishMessage("stepper/x/fwd", "10");
+                    publishMessage(topic_stepper_x_fwd, "10");
                 }
                 return true;
             }
@@ -262,7 +412,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    publishMessage("stepper/x/fwd", "1");
+                    publishMessage(topic_stepper_x_fwd, "1");
                 }
                 return true;
             }
@@ -271,7 +421,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    publishMessage("stepper/x/bwd", "10");
+                    publishMessage(topic_stepper_x_bwd, "10");
                 }
                 return true;
             }
@@ -280,47 +430,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    publishMessage("stepper/x/bwd", "1");
-                }
-                return true;
-            }
-        });
-
-
-        //******************* STEPPER in Y-Direction ********************************************//
-        // this goes wherever you setup your button listener:
-        button_y_fwd_coarse.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    publishMessage("stepper/y/fwd", "10");
-                }
-                return true;
-            }
-        });
-        button_y_fwd_fine.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    publishMessage("stepper/y/fwd", "1");
-                }
-                return true;
-            }
-        });
-        button_y_bwd_coarse.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    publishMessage("stepper/y/bwd", "10");
-                }
-                return true;
-            }
-        });
-        button_y_bwd_fine.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    publishMessage("stepper/y/bwd", "1");
+                    publishMessage(topic_stepper_x_bwd, "1");
                 }
                 return true;
             }
@@ -616,6 +726,11 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         // set gui
         updateGUI();
     }
+
+
+
+
+
 
 
     public void decrement() {

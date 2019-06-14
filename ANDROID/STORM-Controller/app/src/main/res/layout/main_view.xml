@@ -4,29 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/button_lights_right"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:enabled="true"
-            android:text="LED RIGHT" />
-
-        <Button
-            android:id="@+id/button_lights_left"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:enabled="true"
-            android:text="LED LEFT" />
-    </LinearLayout>
-
-
+    <!-- This is the lens for X in left! -->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,31 +16,58 @@
             android:id="@+id/textViewXLeft"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="LX (l)"
             android:textSize="8pt" />
 
         <Button
+            android:id="@+id/button_x_left_minus2"
+            android:layout_width="1pt"
+            android:layout_height="25pt"
+            android:layout_weight="1"
+            android:text="--" />
+
+        <Button
             android:id="@+id/button_x_left_minus"
-            android:layout_width="13pt"
-            android:layout_height="34pt"
+            android:layout_width="1pt"
+            android:layout_height="25pt"
             android:layout_weight="1"
             android:text="-" />
 
-        <SeekBar
-            android:id="@+id/seekbar_x_left"
-            android:layout_width="50pt"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:max="65535" />
-
         <Button
             android:id="@+id/button_x_left_plus"
-            android:layout_width="13pt"
-            android:layout_height="34pt"
+            android:layout_width="1pt"
+            android:layout_height="25pt"
             android:layout_weight="1"
             android:text="+" />
+
+        <Button
+            android:id="@+id/button_x_left_plus2"
+            android:layout_width="1pt"
+            android:layout_height="25pt"
+            android:layout_weight="1"
+            android:text="++" />
+
     </LinearLayout>
-    
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1pt"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <SeekBar
+            android:id="@+id/seekbar_x_left"
+            android:layout_width="match_parent"
+            android:layout_height="10pt"
+            android:layout_weight="1"
+            android:max="65535" />
+    </LinearLayout>
+
+
+    <!-- This is the lens for Z in left! -->
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -72,38 +78,120 @@
             android:id="@+id/textViewZLeft"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="LZ (l)"
             android:textSize="8pt" />
 
         <Button
+            android:id="@+id/button_z_left_minus2"
+            android:layout_width="1pt"
+            android:layout_height="25pt"
+            android:layout_weight="1"
+            android:text="--" />
+
+        <Button
             android:id="@+id/button_z_left_minus"
-            android:layout_width="13pt"
-            android:layout_height="34pt"
+            android:layout_width="1pt"
+            android:layout_height="25pt"
             android:layout_weight="1"
             android:text="-" />
 
-        <SeekBar
-            android:id="@+id/seekbar_z_left"
-            android:layout_width="50pt"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:max="65535" />
-
         <Button
             android:id="@+id/button_z_left_plus"
-            android:layout_width="13pt"
-            android:layout_height="34pt"
+            android:layout_width="1pt"
+            android:layout_height="25pt"
             android:layout_weight="1"
             android:text="+" />
+
+        <Button
+            android:id="@+id/button_z_left_plus2"
+            android:layout_width="1pt"
+            android:layout_height="25pt"
+            android:layout_weight="1"
+            android:text="++" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1pt"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <SeekBar
+            android:id="@+id/seekbar_z_left"
+            android:layout_width="match_parent"
+            android:layout_height="10pt"
+            android:layout_weight="1"
+            android:max="65535" />
+    </LinearLayout>
+
+
+    <!-- This is the lens for Z in right! -->
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textViewZRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="LZ (r)"
+            android:textSize="8pt" />
+
+        <Button
+            android:id="@+id/button_z_right_minus2"
+            android:layout_width="1pt"
+            android:layout_height="25pt"
+            android:layout_weight="1"
+            android:text="--" />
+
+        <Button
+            android:id="@+id/button_z_right_minus"
+            android:layout_width="1pt"
+            android:layout_height="25pt"
+            android:layout_weight="1"
+            android:text="-" />
+
+        <Button
+            android:id="@+id/button_z_right_plus"
+            android:layout_width="1pt"
+            android:layout_height="25pt"
+            android:layout_weight="1"
+            android:text="+" />
+
+        <Button
+            android:id="@+id/button_z_right_plus2"
+            android:layout_width="1pt"
+            android:layout_height="25pt"
+            android:layout_weight="1"
+            android:text="++" />
+
     </LinearLayout>
 
 
 
-    <Space
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginVertical="10dp" />
+        android:layout_height="1pt"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <SeekBar
+            android:id="@+id/seekbar_z_right"
+            android:layout_width="match_parent"
+            android:layout_height="10pt"
+            android:layout_weight="1"
+            android:max="65535" />
+    </LinearLayout>
+
+
+    <!-- This is the lens for X in right! -->
 
 
     <LinearLayout
@@ -115,64 +203,65 @@
             android:id="@+id/textViewXRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="LX (r)"
             android:textSize="8pt" />
 
         <Button
+            android:id="@+id/button_x_right_minus2"
+            android:layout_width="1pt"
+            android:layout_height="25pt"
+            android:layout_weight="1"
+            android:text="--" />
+
+        <Button
             android:id="@+id/button_x_right_minus"
-            android:layout_width="13pt"
-            android:layout_height="34pt"
+            android:layout_width="1pt"
+            android:layout_height="25pt"
             android:layout_weight="1"
             android:text="-" />
-
-        <SeekBar
-            android:id="@+id/seekbar_x_right"
-            android:layout_width="50pt"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:max="65535" />
 
         <Button
             android:id="@+id/button_x_right_plus"
-            android:layout_width="13pt"
-            android:layout_height="34pt"
+            android:layout_width="1pt"
+            android:layout_height="25pt"
             android:layout_weight="1"
             android:text="+" />
+
+        <Button
+            android:id="@+id/button_x_right_plus2"
+            android:layout_width="1pt"
+            android:layout_height="25pt"
+            android:layout_weight="1"
+            android:text="++" />
+
     </LinearLayout>
+
+
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textViewZRight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="LZ (r)"
-            android:textSize="8pt" />
-
-        <Button
-            android:id="@+id/button_z_right_minus"
-            android:layout_width="13pt"
-            android:layout_height="34pt"
-            android:layout_weight="1"
-            android:text="-" />
+        android:layout_height="1pt"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
         <SeekBar
-            android:id="@+id/seekbar_z_right"
-            android:layout_width="50pt"
-            android:layout_height="match_parent"
+            android:id="@+id/seekbar_x_right"
+            android:layout_width="match_parent"
+            android:layout_height="10pt"
             android:layout_weight="1"
             android:max="65535" />
-
-        <Button
-            android:id="@+id/button_z_right_plus"
-            android:layout_width="13pt"
-            android:layout_height="34pt"
-            android:layout_weight="1"
-            android:text="+" />
     </LinearLayout>
+
+
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="10dp" />
+
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -205,9 +294,12 @@
             android:layout_width="wrap_content"
             android:layout_height="24pt"
             android:enabled="true"
-            android:text="X--" />
+            android:text="X-" />
 
     </LinearLayout>
+
+
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -264,75 +356,41 @@
                 android:textSize="8pt" />
 
             <ToggleButton
-            android:id="@+id/button_vibrate"
-            android:layout_width="50pt"
-            android:layout_height="25pt"
-            android:checked="false"
-            android:text="SOFI" />
+                android:id="@+id/button_vibrate"
+                android:layout_width="40pt"
+                android:layout_height="25pt"
+                android:checked="false"
+                android:text="SOFI" />
 
             <ToggleButton
                 android:id="@+id/button_laser_left"
-                android:layout_width="50pt"
+                android:layout_width="40pt"
                 android:layout_height="25pt"
                 android:checked="false"
                 android:text="L(l)" />
 
             <ToggleButton
                 android:id="@+id/button_laser_right"
-                android:layout_width="50pt"
+                android:layout_width="40pt"
                 android:layout_height="25pt"
                 android:checked="false"
                 android:text="L(2)" />
+
+
+            <Button
+                android:id="@+id/button_lights_left"
+                android:layout_width="40pt"
+                android:layout_height="25pt"
+                android:layout_weight="1"
+                android:enabled="true"
+                android:text="LED" />
+
         </LinearLayout>
 
-        <!--
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/txtv_freq"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Frequency:" />
-
-            <EditText
-                android:id="@+id/texte_freq"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="number"
-                android:text="20" />
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/txtv_amp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Amplitude:" />
-
-            <EditText
-                android:id="@+id/texte_amp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="number"
-                android:text="100" />
-        </LinearLayout>
--->
     </LinearLayout>
 
 
 
 </LinearLayout>
+
+

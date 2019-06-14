@@ -69,7 +69,7 @@ int pwmpin_xl = 25;
 
 // left z-channel
 int pwm_channel_zl = 3;
-int pwmpin_zl = 33;
+int pwmpin_zl = 32;
 
 // MQTT Stuff
 long lastMsg = 0;
