@@ -4,12 +4,14 @@ mytimeseries = readtimeseries('C:\Users\diederichbenedict\Dropbox\Dokumente\Prom
 myshift = {};
 myflucti = {};
 nframes = size(mytimeseries,3);
+firstframe = extract(squeeze(mytimeseries(:,:,0)), [200,200]);
 for iframe = 1:nframes-1
-    myshift{iframe} = findshift(squeeze(mytimeseries(:,:,iframe)), squeeze(mytimeseries(:,:,iframe+1)));
+    secondframe = extract(squeeze(mytimeseries(:,:,iframe)), [200,200]);
+    myshift{iframe} = findshift(firstframe, secondframe,'ffts');
     myflucti{iframe} = shift(squeeze(mytimeseries(:,:,iframe+1)), myshift{iframe});
     iframe
 end
 
-myflucti_mat = cat(3, myflucti{:});
-
+myflucti_mat = double(cat(3, myflucti{:}));
+save('myflucti_mat.TIFF','myflucti_mat','-v7.3')
 

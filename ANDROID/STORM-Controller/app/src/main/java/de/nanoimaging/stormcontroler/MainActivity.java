@@ -71,9 +71,9 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     public static final String topic_laser_left = "laser/left/state";
     public static final String topic_laser_right = "laser/right/state";
     public static final String topic_stepper_y_fwd = "stepper/y/fwd";
-    public static final String topic_stepper_y_bwd = "stepper/y/fwd";
+    public static final String topic_stepper_y_bwd = "stepper/y/bwd";
     public static final String topic_stepper_x_fwd = "stepper/x/fwd";
-    public static final String topic_stepper_x_bwd = "stepper/x/fwd";
+    public static final String topic_stepper_x_bwd = "stepper/x/bwd";
 
     // PWM settings
     int PWM_resolution = 32768 - 1; // bitrate of the PWM signal

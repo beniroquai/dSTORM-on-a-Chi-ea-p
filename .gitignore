@@ -32,6 +32,14 @@ proguard/
 # Android Studio captures folder
 captures/
 
+#large files
+*.tif
+*.tiff
+*.mp4
+*.mat
+*.h5
+*.hdf5
+
 # IntelliJ
 *.iml
 .idea/workspace.xml
