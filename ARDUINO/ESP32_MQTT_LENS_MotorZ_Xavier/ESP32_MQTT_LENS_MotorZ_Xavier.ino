@@ -32,11 +32,11 @@ int LENS_X_PIN = 25;
 int LENS_Z_PIN = 26;
 
 ///* topics - DON'T FORGET TO REGISTER THEM! */
-#define LED_TOPIC     "lens/left/led"
-#define LENS_X_TOPIC     "lens/right/x"
-#define LENS_Z_TOPIC     "lens/right/z"
+#define LED_TOPIC         "lens/left/led"
+#define LENS_X_TOPIC      "lens/right/x"
+#define LENS_Z_TOPIC      "lens/right/z"
 #define LENS_VIBRATE      "lens/both/vibrate"
-#define LASER_TOPIC  "laser/left/state"
+#define LASER_TOPIC       "lens/left/z"
 #define STEPPER_X_FWD     "stepper/y/fwd"
 #define STEPPER_X_BWD     "stepper/y/bwd"
 
@@ -52,6 +52,7 @@ int sofi_amplitude = 1;   // how many steps +/- ?
 // default values for x/z lens' positions
 int lens_x_int = 0;
 int lens_z_int = 0;
+int laser_int = 0;
 
 // create an instance of the stepper class, specifying
 // the number of steps of the motor and the pins it's
@@ -64,13 +65,13 @@ int pwm_resolution = 15;
 int pwm_frequency = 800000;//19000; //12000
 
 // lens x-channel
-int pwm_channel_x = 0;
+int PWM_CHANNEL_X = 0;
 
 // lens z-channel
-int pwm_channel_z = 1;
+int PWM_CHANNEL_Z = 1;
 
 // laser-channel
-int pwm_channel_laser = 2;
+int PWM_CHANNEL_LASER = 2;
 
 // MQTT Stuff
 long lastMsg = 0;
@@ -80,11 +81,7 @@ void setup() {
 
   /* set led and laser as output to control led on-off */
   pinMode(LED_PIN, OUTPUT);
-  pinMode(LASER_PIN, OUTPUT);
-
-  // Reset the LAsers to zero
-  digitalWrite(LASER_PIN, LOW);
-
+  
   // Visualize, that ESP is on!
   digitalWrite(LED_PIN, HIGH);
   delay(1000);
@@ -97,17 +94,17 @@ void setup() {
   pinMode(motorPin_X[3], OUTPUT);
 
   /* setup the PWM ports and reset them to 0*/
-  ledcSetup(1, pwm_frequency, pwm_resolution);
-  ledcAttachPin(LENS_X_PIN, pwm_channel_x);
-  ledcWrite(pwm_channel_x, 0);
+  ledcSetup(PWM_CHANNEL_X, pwm_frequency, pwm_resolution);
+  ledcAttachPin(LENS_X_PIN, PWM_CHANNEL_X);
+  ledcWrite(PWM_CHANNEL_X, 0);
 
-  ledcSetup(2, pwm_frequency , pwm_resolution);
-  ledcAttachPin(LENS_Z_PIN, pwm_channel_z);
-  ledcWrite(pwm_channel_z, 0);
+  ledcSetup(PWM_CHANNEL_Z, pwm_frequency, pwm_resolution);
+  ledcAttachPin(LENS_Z_PIN, PWM_CHANNEL_Z);
+  ledcWrite(PWM_CHANNEL_Z, 0);
 
-  ledcSetup(3, pwm_frequency , pwm_resolution);
-  ledcAttachPin(LASER_PIN, pwm_channel_laser);
-  ledcWrite(pwm_channel_laser, 0);
+  ledcSetup(PWM_CHANNEL_LASER, pwm_frequency, pwm_resolution);
+  ledcAttachPin(LASER_PIN, PWM_CHANNEL_LASER);
+  ledcWrite(PWM_CHANNEL_LASER, 0);
 
   
   Serial.begin(115200);
@@ -152,14 +149,14 @@ void loop() {
     if(lens_x_int - sofi_amplitude / 2) lens_x_int += sofi_amplitude / 2;
 
     // move lens in plus-direction
-    ledcWrite(pwm_channel_x, lens_x_int + sofi_amplitude / 2);
+    ledcWrite(PWM_CHANNEL_X, lens_x_int + sofi_amplitude / 2);
 
     // DEBUGGING: SHOW LED flasshing
     digitalWrite(LED_PIN, HIGH);
     delay(sofi_periode);
     
     // move lens in plus-direction
-    ledcWrite(pwm_channel_x, lens_x_int - sofi_amplitude / 2);
+    ledcWrite(PWM_CHANNEL_X, lens_x_int - sofi_amplitude / 2);
 
     // DEBUGGING: SHOW LED flasshing
     digitalWrite(LED_PIN, LOW);
@@ -202,15 +199,15 @@ void receivedCallback(char* topic, byte* payload, unsigned int length) {
       digitalWrite(LED_PIN, LOW);
     }
   }
-  // SWitch on laser
-  if (String(topic) == LASER_TOPIC)  {
-    /* we got '1' -> on */
-    if (payload_int == 1) {
-      digitalWrite(LASER_PIN, HIGH);
-    } else {
-      /* we got '0' -> on */
-      digitalWrite(LASER_PIN, LOW);
-    }
+
+  // Catch the value for movement of lens in X-direction (right)
+  if (String(topic) == LASER_TOPIC) {
+    //dacWrite(25, (int)payload_int);
+    laser_int = abs((int)payload_int);
+    ledcWrite(PWM_CHANNEL_LASER, laser_int);
+    Serial.print("Laser Intensity is set to: ");
+    Serial.print(laser_int);
+    Serial.println();
   }
   
 
@@ -241,7 +238,7 @@ void receivedCallback(char* topic, byte* payload, unsigned int length) {
   if (String(topic) == LENS_X_TOPIC) {
     //dacWrite(25, (int)payload_int);
     lens_x_int = abs((int)payload_int);
-    ledcAttachPin(pwm_channel_x, lens_x_int);
+    ledcWrite(PWM_CHANNEL_X, lens_x_int);
     Serial.print("Lens (right) X is set to: ");
     Serial.print(lens_x_int);
     Serial.println();
@@ -251,7 +248,7 @@ void receivedCallback(char* topic, byte* payload, unsigned int length) {
   if (String(topic) == LENS_Z_TOPIC) {
     //dacWrite(26, (int)payload_int);
     lens_z_int = abs((int)payload_int);
-    ledcAttachPin(pwm_channel_z, lens_z_int);
+    ledcWrite(PWM_CHANNEL_Z, lens_z_int);
     Serial.print("Lens (right) Y is set to: ");
     Serial.print(lens_z_int);
     Serial.println();
