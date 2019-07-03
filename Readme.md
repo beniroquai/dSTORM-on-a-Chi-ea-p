@@ -33,9 +33,14 @@ Those commands will be send by the Android APP.
 
 ## Android APP GUI
 
-![test](./IMAGES/Screenshot_20181008-115700.png)
+<p align="center">
+<img src="./IMAGES/Screenshot_20181008-115700.png" width="300">
+</p>
 
-The app can also be downloaded from our [Google Drive](https://drive.google.com/drive/folders/1ZMbA4FLp0GcJbrnLGYNsfIKh4AQO2nTv?usp=sharing)
+Simply use `Android Studio` to build the latest version from the [Android-Folder](./ANDROID/STORM-Controller).
+
+A prebuilt App can also be downloaded from our [Google Drive](https://drive.google.com/drive/folders/1ZMbA4FLp0GcJbrnLGYNsfIKh4AQO2nTv?usp=sharing). (Might be an older version though).
+
 ## Debugging in Mosquitto
 Password of our broker is "password", username is pi. 
 To read out the topics which are sent through the network, type 
@@ -47,4 +52,34 @@ where the IP is gathered by finding the raspberry pis IP adress by typing
 
 	ifconfig 
 	
-	
+## Create Hotspot to interact with the MQTT
+
+The WiFi is hardcoded into the Pi and ESP32 code. Therfore we have to setup a hotspot with e.g. a cellphone as follows:
+
+- Create a WiFi Hotspot on your Android cellphone with the following credentials:
+
+```
+SSID: Blynk
+Password: 12345678
+```
+The Raspberry pi with the Mosquito server as well as the ESP32 clients will automatically connect to it. 
+
+## Wiring 
+The wiring is briefly described in this drawing:
+<p align="center">
+<img src="./IMAGES/Electronics_Drawing.jpeg" width="700">
+</p>
+
+## Latest ESP32-Code
+The code can be found in the folder [Arduino](./ARDUINO). The latest version which works with the app is the following `.ino`-file: [ESP32 MQTT LENS MotorZ](./ARDUINO/ESP32_MQTT_LENS_MotorZ_Xavier). 
+
+- Simply copy it into your Arduino IDE
+- Select the ESP Dev board as the device 
+- Compile and flash it
+
+The following functionalities are implemented (according to the diagram above):
+
+- Laser TTL control (Intensity via PWM)
+- Lens +/- X and Z control (via PWM)
+- Stepper for Z-stage (via H-Bridge) 
+
