@@ -10,6 +10,8 @@ Current configuration:
 
 ![](./IMAGES/DSC_0268.JPG)
 
+
+
 ## List of available commands
 
 |   | MQTT Topic   | Action   |  Possible Values  |   |
@@ -69,6 +71,13 @@ The wiring is briefly described in this drawing:
 <p align="center">
 <img src="./IMAGES/Electronics_Drawing.jpeg" width="700">
 </p>
+
+### Lens wiring
+The lens from the KES-400A Bluray player (Older Playstation 3 drive) looks as follows: 
+<p align="center">
+<img src="./IMAGES/Lens_Soldering_setup.png" width="700">
+</p>
+
 
 ## Latest ESP32-Code
 The code can be found in the folder [Arduino](./ARDUINO). The latest version which works with the app is the following `.ino`-file: [ESP32 MQTT LENS MotorZ](./ARDUINO/ESP32_MQTT_LENS_MotorZ_Xavier). 

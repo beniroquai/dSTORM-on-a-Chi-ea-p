@@ -4,7 +4,9 @@
 
 
 // Pins for the Motor X and Y
-int motorPin_X[] = {5,21,18,19};
+//int motorPin_X[] = {5,21,18,19};
+int motorPin_X[] = {2,3,4,5};
+
 int motorPin_Y[] = {26, 25, 23, 32};
 
 // Define speeds
