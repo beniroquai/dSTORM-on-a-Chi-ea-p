@@ -12,7 +12,7 @@ import NanoImagingPack as nip
 
 myvideopath = 'C://Users//diederichbenedict//Dropbox//STORMonAcheaip//STORM-on-a-chea(i)p//'
 myvideofile = 'MOV_2019_07_09_17_24_52.mp4'
-
+myvideofile = 'MOV_2019_07_09_17_24_24.mp4'
 #myvideopath = '/Users/bene/Downloads/'
 #myvideofile = '2019-06-20 18.41.00_blink.mp4'
 

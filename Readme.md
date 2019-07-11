@@ -72,6 +72,8 @@ The wiring is briefly described in this drawing:
 <img src="./IMAGES/Electronics_Drawing.jpeg" width="700">
 </p>
 
+A detailed description on how to wire the lenses (Lens X/Z +/-) to the LED Buck driver can be found at the sparkfun page [here](https://learn.sparkfun.com/tutorials/picobuck-hookup-guide-v12).
+
 ### Lens wiring
 The lens from the KES-400A Bluray player (Older Playstation 3 drive) looks as follows: 
 <p align="center">

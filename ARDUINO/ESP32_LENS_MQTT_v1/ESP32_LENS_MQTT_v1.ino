@@ -41,7 +41,7 @@ int pin_laser_right = 14;
 // global switch for vibrating the lenses
 int sofi_periode = 10;  // ms
 int sofi_state = false;   // is sofi turned on?
-int sofi_amplitude = 1;   // how many steps +/- ?
+int sofi_amplitude = 15;   // how many steps +/- ?
 
 // default values for x/z lens' positions
 int lens_xl_int = 0;

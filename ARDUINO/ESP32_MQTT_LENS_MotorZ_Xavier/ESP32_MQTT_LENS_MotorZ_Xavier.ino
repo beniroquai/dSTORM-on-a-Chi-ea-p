@@ -25,7 +25,7 @@ PubSubClient client(espClient);
 int LED_PIN = 2;
 
 /*LASER GPIO pin*/
-int LASER_PIN = 33;
+int LASER_PIN = 34;
 
 /*Lens GPIO pins*/
 int LENS_X_PIN = 25;
