@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,7 +53,8 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     MqttAndroidClient mqttAndroidClient;
 
     // Server uri follows the format tcp://ipaddress:port
-    final String serverUri = "tcp://192.168.43.88";
+    String serverUri = "tcp://192.168.43.88";
+
     final String mqttUser = "username";
     final String mqttPass = "pi";
 
@@ -135,7 +137,9 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     Button button_x_right_minus2;
     Button button_z_right_plus2;
     Button button_z_right_minus2;
+    Button button_ip_address_go;
 
+    EditText EditTextIPAddress;
 
     // Save the state of the progress bar
     int val_lens_x_right = 0;
@@ -170,6 +174,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         lightsButtonLeft = findViewById(R.id.button_lights_left);
         //lightsButtonRight = findViewById(R.id.button_lights_right);
 
+        EditTextIPAddress = (EditText) findViewById(R.id.editText_ip_address);
         button_x_fwd_coarse = findViewById(R.id.button_x_fwd_coarse);
         button_x_fwd_fine = findViewById(R.id.button_x_fwd_fine);
         button_x_bwd_coarse = findViewById(R.id.button_x_bwd_coarse);
@@ -178,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         button_y_fwd_fine = findViewById(R.id.button_y_fwd_fine);
         button_y_bwd_coarse = findViewById(R.id.button_y_bwd_coarse);
         button_y_bwd_fine = findViewById(R.id.button_y_bwd_fine);
+        button_ip_address_go = findViewById(R.id.button_ip_address_go);
 
         // toggle buttons
         button_sofi = findViewById(R.id.button_vibrate);
@@ -243,6 +249,21 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             Toast.makeText(this, R.string.no_internets, Toast.LENGTH_SHORT).show();
 
         //getCallingActivity().publish(connection, topic, message, selectedQos, retainValue);
+
+
+
+        button_ip_address_go.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    serverUri = "tcp://" + EditTextIPAddress.getText().toString(); //tcp://192.168.43.88";
+                    Toast.makeText(MainActivity.this, "IP-Address set to: " + serverUri, Toast.LENGTH_SHORT).show();
+                    stopConnection();
+                    initialConfig();
+                }
+                return true;
+            }
+        });
 
         // this goes wherever you setup your button listener:
         lightsButtonLeft.setOnTouchListener(new View.OnTouchListener() {
@@ -966,4 +987,12 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     }
 
 
+    private void stopConnection() {
+        mqttAndroidClient.close();
+        Toast.makeText(MainActivity.this, "Connection closed - on purpose?", Toast.LENGTH_SHORT).show();
+    }
 }
+
+
+
+
