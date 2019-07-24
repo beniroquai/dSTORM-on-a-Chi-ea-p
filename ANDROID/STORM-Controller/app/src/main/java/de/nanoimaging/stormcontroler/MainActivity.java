@@ -1,6 +1,7 @@
 package de.nanoimaging.stormcontroler;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
@@ -63,6 +64,9 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     boolean is_vibration = false;
     // TAG
     String TAG = "dSTORM-on-a-chieap";
+
+    // Save settings for later
+    private final String PREFERENCE_FILE_KEY = "myAppPreference";
 
     // MQTT Topics
     public static final String topic_x_left = "lens/left/x";
@@ -169,6 +173,11 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             }
         }
 
+        // Take care of previously saved settings
+        SharedPreferences sharedPref = this.getSharedPreferences(
+                PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
 
         // Register GUI components
         lightsButtonLeft = findViewById(R.id.button_lights_left);
@@ -243,6 +252,11 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         seekbar_z_left.setOnSeekBarChangeListener(this);
 
 
+        // Read old IP ADress if available and set it to the GUI
+        serverUri = sharedPref.getString("IP_ADDRESS", serverUri);
+        EditTextIPAddress.setText(serverUri);
+
+
         if (isNetworkAvailable()) {
             initialConfig();
         } else
@@ -260,6 +274,11 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                     Toast.makeText(MainActivity.this, "IP-Address set to: " + serverUri, Toast.LENGTH_SHORT).show();
                     stopConnection();
                     initialConfig();
+
+                    // Save the IP address for next start
+                    editor.putString("IP_ADDRESS", serverUri);
+                    editor.commit();
+
                 }
                 return true;
             }
