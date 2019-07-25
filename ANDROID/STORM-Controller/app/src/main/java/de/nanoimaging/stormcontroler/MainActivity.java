@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,6 +28,11 @@ import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.ByteOrder;
 
 
 /*
@@ -142,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     Button button_z_right_plus2;
     Button button_z_right_minus2;
     Button button_ip_address_go;
+    Button button_load_localip;
 
     EditText EditTextIPAddress;
 
@@ -173,6 +180,8 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             }
         }
 
+
+
         // Take care of previously saved settings
         SharedPreferences sharedPref = this.getSharedPreferences(
                 PREFERENCE_FILE_KEY, Context.MODE_PRIVATE);
@@ -193,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         button_y_bwd_coarse = findViewById(R.id.button_y_bwd_coarse);
         button_y_bwd_fine = findViewById(R.id.button_y_bwd_fine);
         button_ip_address_go = findViewById(R.id.button_ip_address_go);
+        button_load_localip = findViewById(R.id.button_load_localip);
 
         // toggle buttons
         button_sofi = findViewById(R.id.button_vibrate);
@@ -283,6 +293,28 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 return true;
             }
         });
+
+        button_load_localip.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    serverUri = String.valueOf(wifiIpAddress(MainActivity.this));
+                    EditTextIPAddress.setText(serverUri);
+                    Toast.makeText(MainActivity.this, "IP-Address set to: " + serverUri, Toast.LENGTH_SHORT).show();
+                    stopConnection();
+                    initialConfig();
+
+                    // Save the IP address for next start
+                    editor.putString("IP_ADDRESS", serverUri);
+                    editor.commit();
+
+                }
+                return true;
+            }
+        });
+
+
+
 
         // this goes wherever you setup your button listener:
         lightsButtonLeft.setOnTouchListener(new View.OnTouchListener() {
@@ -1015,6 +1047,29 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             Toast.makeText(MainActivity.this, "Something went wrong - propbably no connection established?", Toast.LENGTH_SHORT).show();
             Log.e(TAG, String.valueOf(e));
         }
+    }
+
+
+    protected String wifiIpAddress(Context context) {
+        WifiManager wifiManager = (WifiManager) context.getSystemService(WIFI_SERVICE);
+        int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
+
+        // Convert little-endian to big-endianif needed
+        if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
+            ipAddress = Integer.reverseBytes(ipAddress);
+        }
+
+        byte[] ipByteArray = BigInteger.valueOf(ipAddress).toByteArray();
+
+        String ipAddressString;
+        try {
+            ipAddressString = InetAddress.getByAddress(ipByteArray).getHostAddress();
+        } catch (UnknownHostException ex) {
+            Log.e("WIFIIP", "Unable to get host address.");
+            ipAddressString = null;
+        }
+
+        return ipAddressString;
     }
 }
 

@@ -307,22 +307,38 @@
 
         <EditText
             android:id="@+id/editText_ip_address"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:ems="10"
             android:inputType="number"
             android:digits="0123456789."
+            android:layout_weight="1"
             android:text="192.168.43.88" />
 
         <Button
+            android:id="@+id/button_load_localip"
+            android:layout_width="wrap_content"
+            android:layout_height="24pt"
+            android:layout_weight="1"
+            android:text="IP!" />
+
+        <Button
             android:id="@+id/button_ip_address_go"
-            android:layout_width="75pt"
+            android:layout_width="wrap_content"
             android:layout_height="24pt"
             android:layout_weight="1"
             android:text="Go!" />
 
-        <Button
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+    <Button
             android:id="@+id/button_y_fwd_coarse"
             android:layout_width="wrap_content"
             android:layout_height="24pt"
