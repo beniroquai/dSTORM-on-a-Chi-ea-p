@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     MqttAndroidClient mqttAndroidClient;
 
     // Server uri follows the format tcp://ipaddress:port
-    String serverUri = "tcp://192.168.43.88";
+    String serverUri = "192.168.43.88";
 
     final String mqttUser = "username";
     final String mqttPass = "pi";
@@ -270,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    serverUri = "tcp://" + EditTextIPAddress.getText().toString(); //tcp://192.168.43.88";
+                    serverUri = EditTextIPAddress.getText().toString(); //tcp://192.168.43.88";
                     Toast.makeText(MainActivity.this, "IP-Address set to: " + serverUri, Toast.LENGTH_SHORT).show();
                     stopConnection();
                     initialConfig();
@@ -909,7 +909,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     }
 
     private void initialConfig() {
-        mqttAndroidClient = new MqttAndroidClient(getApplicationContext(), serverUri, clientId);
+        mqttAndroidClient = new MqttAndroidClient(getApplicationContext(), "tcp://"+serverUri, clientId);
         mqttAndroidClient.setCallback(new MqttCallbackExtended() {
             @Override
             public void connectComplete(boolean reconnect, String serverURI) {
