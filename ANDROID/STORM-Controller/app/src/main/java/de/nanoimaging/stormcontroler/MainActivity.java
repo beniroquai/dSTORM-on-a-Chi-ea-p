@@ -1007,8 +1007,14 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
 
     private void stopConnection() {
-        mqttAndroidClient.close();
-        Toast.makeText(MainActivity.this, "Connection closed - on purpose?", Toast.LENGTH_SHORT).show();
+        try {
+            mqttAndroidClient.close();
+            Toast.makeText(MainActivity.this, "Connection closed - on purpose?", Toast.LENGTH_SHORT).show();
+        }
+        catch(Throwable e){
+            Toast.makeText(MainActivity.this, "Something went wrong - propbably no connection established?", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, String.valueOf(e));
+        }
     }
 }
 
