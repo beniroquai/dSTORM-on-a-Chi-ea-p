@@ -5,13 +5,14 @@
 
 // Pins for the Motor X and Y
 //int motorPin_X[] = {5,21,18,19};
-int motorPin_X[] = {2,3,4,5};
+//int motorPin_X[] = {2,3,4,5};
+int motorPin_X[] = {25,26,27,14};
 
 int motorPin_Y[] = {26, 25, 23, 32};
 
 // Define speeds
 unsigned int lowSpeed  = 10000; // Notabene: nicht über 16000
-unsigned int highSpeed = 10000;
+unsigned int highSpeed = 1000;
 
 // Set registers
 void setup() {
@@ -30,11 +31,11 @@ void loop()
 {
 
   // Drive motor X in positive direction
-  drive_right(highSpeed, motorPin_X,80);
+  drive_right(highSpeed, motorPin_X,1000);
   stop(motorPin_X);
 
   // Drive motor X in negative direction
-  drive_left(highSpeed, motorPin_X,80);
+  drive_left(highSpeed, motorPin_X,1000);
   stop(motorPin_X);
 
 /*

@@ -1,5 +1,7 @@
 This is the repository for the MQTT-App which controlles the single-mode fiber coupling system. 
 
+## CAD Designs
+Some of the mechanical design files can be found in the folder [INVENTOR](https://github.com/bionanoimaging/dSTORM-on-a-Chi-ea-p/tree/master/INVENTOR/Nanoscopy-on-a-cheap). They were created with Autodesk Inventor 2019 and exported as ```.STL```files to get printed. 
 
 ## Setup
 To make it work, you can use your Android cellphone and start an ad-hoc WiFi network. SSID should be **Blynk**, password is **12345678**. All ESPs connect to the same network. 
@@ -66,6 +68,14 @@ Password: 12345678
 ```
 The Raspberry pi with the Mosquito server as well as the ESP32 clients will automatically connect to it. 
 
+## Create a MQTT Broker/Server with an Android cellphone directly
+1. Install ```MQTT Broker APP```from the [Google Play Store](https://play.google.com/store/apps/details?id=server.com.mqtt&hl=de)
+2. Start the Wifi Hotspot from your Android Cellphone (SSID: ***Blynk***, Password: ***12345678***
+3. Click on ***lIP**** in the app to get the "local IP" of the cellphone
+4. open the APP and controle the ESP32 
+
+Not working yet: The ESP32 is not recognizing the MQTT Server IP automatically (it cannot be static). Need to fix it! So far it has to be compiled in the code of the ESP32.
+
 ## Wiring 
 The wiring is briefly described in this drawing:
 <p align="center">
@@ -93,4 +103,13 @@ The following functionalities are implemented (according to the diagram above):
 - Laser TTL control (Intensity via PWM)
 - Lens +/- X and Z control (via PWM)
 - Stepper for Z-stage (via H-Bridge) 
+
+
+## Disclaimer
+We are not responsible for anything. If you have any questions, please feel free to file an issue! 
+
+## License 
+- Hardware: ***CERN*** Open Hardware License
+- Software: ***MIT***
+
 
