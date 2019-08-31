@@ -58,7 +58,8 @@ int laser_int = 0;
 // the number of steps of the motor and the pins it's
 // attached to
 //Stepper STP_X(STEPS,5,21,18,19);
-int motorPin_X[] = {5,21,18,19};
+//int motorPin_X[] = {5,21,18,19};
+int motorPin_X[] = {27,26,25,33};
 unsigned int highSpeed = 5000;
 // PWM Stuff
 int pwm_resolution = 15;
@@ -214,7 +215,7 @@ void receivedCallback(char* topic, byte* payload, unsigned int length) {
    // Catch the value for stepment of lens in X-direction
   if (String(topic) == STEPPER_X_FWD) {
     // Drive motor X in positive direction
-    drive_left(highSpeed, motorPin_X,(int)payload_int);
+    drive_left(highSpeed, motorPin_X,(int)payload_int*10);
     stop(motorPin_X);
     //STP_X.step((int)payload_int*10);
     Serial.print("Motor is running in x for: ");
@@ -225,7 +226,7 @@ void receivedCallback(char* topic, byte* payload, unsigned int length) {
   // Catch the value for stepment of lens in Y-direction
   if (String(topic) == STEPPER_X_BWD) {
       // Drive motor X in positive direction
-    drive_right(highSpeed, motorPin_X,(int)payload_int);
+    drive_right(highSpeed, motorPin_X,(int)payload_int*10);
     stop(motorPin_X);
     //    STP_X.step(-(int)payload_int*10);
     Serial.print("Motor is running in x for: ");
