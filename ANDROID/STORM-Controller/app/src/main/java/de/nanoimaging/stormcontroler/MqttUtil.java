@@ -1,6 +1,7 @@
 package de.nanoimaging.stormcontroler;
 
 import android.content.Context;
+import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -19,7 +20,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
  * Created by Ismael on 18/03/2018.
  */
 
-public class MqttUtil {
+public class MqttUtil extends MultiDexApplication {
     public MqttAndroidClient mqttAndroidClient;
 
     final String serverUri = "tcp://......................";

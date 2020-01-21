@@ -137,36 +137,36 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/textViewZRight"
+            android:id="@+id/textViewLaserRed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="LZ (r)"
+            android:text="Laser"
             android:textSize="8pt" />
 
         <Button
-            android:id="@+id/button_z_right_minus2"
+            android:id="@+id/button_laser_red_minus2"
             android:layout_width="1pt"
             android:layout_height="25pt"
             android:layout_weight="1"
             android:text="--" />
 
         <Button
-            android:id="@+id/button_z_right_minus"
+            android:id="@+id/button_laser_red_minus"
             android:layout_width="1pt"
             android:layout_height="25pt"
             android:layout_weight="1"
             android:text="-" />
 
         <Button
-            android:id="@+id/button_z_right_plus"
+            android:id="@+id/button_laser_red_plus"
             android:layout_width="1pt"
             android:layout_height="25pt"
             android:layout_weight="1"
             android:text="+" />
 
         <Button
-            android:id="@+id/button_z_right_plus2"
+            android:id="@+id/button_laser_red_plus2"
             android:layout_width="1pt"
             android:layout_height="25pt"
             android:layout_weight="1"
@@ -183,7 +183,7 @@
         android:orientation="vertical">
 
         <SeekBar
-            android:id="@+id/seekbar_z_right"
+            android:id="@+id/seekbar_laser_red"
             android:layout_width="match_parent"
             android:layout_height="10pt"
             android:layout_weight="1"
@@ -199,60 +199,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/textViewXRight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="LX (r)"
-            android:textSize="8pt" />
-
-        <Button
-            android:id="@+id/button_x_right_minus2"
-            android:layout_width="1pt"
-            android:layout_height="25pt"
-            android:layout_weight="1"
-            android:text="--" />
-
-        <Button
-            android:id="@+id/button_x_right_minus"
-            android:layout_width="1pt"
-            android:layout_height="25pt"
-            android:layout_weight="1"
-            android:text="-" />
-
-        <Button
-            android:id="@+id/button_x_right_plus"
-            android:layout_width="1pt"
-            android:layout_height="25pt"
-            android:layout_weight="1"
-            android:text="+" />
-
-        <Button
-            android:id="@+id/button_x_right_plus2"
-            android:layout_width="1pt"
-            android:layout_height="25pt"
-            android:layout_weight="1"
-            android:text="++" />
-
     </LinearLayout>
-
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="1pt"
-        android:layout_weight="1"
-        android:orientation="vertical">
-
-        <SeekBar
-            android:id="@+id/seekbar_x_right"
-            android:layout_width="match_parent"
-            android:layout_height="10pt"
-            android:layout_weight="1"
-            android:max="65535" />
-    </LinearLayout>
-
 
 
     <Space
@@ -314,6 +261,13 @@
             android:digits="0123456789."
             android:layout_weight="1"
             android:text="192.168.43.88" />
+
+        <Button
+            android:id="@+id/button_load_defaultip"
+            android:layout_width="wrap_content"
+            android:layout_height="24pt"
+            android:layout_weight="1"
+            android:text="IPd" />
 
         <Button
             android:id="@+id/button_load_localip"
@@ -384,26 +338,52 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/textViewSOFI"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="SOFI"
-                android:textSize="8pt" />
 
             <ToggleButton
-                android:id="@+id/button_vibrate"
+                android:id="@+id/button_SOFI_x"
                 android:layout_width="40pt"
                 android:layout_height="25pt"
                 android:checked="false"
-                android:text="SOFI" />
+                android:text="SOFI-X" />
+
+
+
+            <EditText
+                android:id="@+id/editText_SOFI_z"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="number"
+                android:digits="0123456789"
+                android:layout_weight="1"
+                android:text="10" />
+
+
+            <ToggleButton
+                android:id="@+id/button_SOFI_z"
+                android:layout_width="40pt"
+                android:layout_height="25pt"
+                android:checked="false"
+                android:text="SOFI-Z" />
+
+            <EditText
+                android:id="@+id/editText_SOFI_x"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="number"
+                android:digits="0123456789"
+                android:layout_weight="1"
+                android:text="10" />
+
+
 
             <ToggleButton
                 android:id="@+id/button_laser_left"
                 android:layout_width="40pt"
                 android:layout_height="25pt"
                 android:checked="false"
+                android:visibility="gone"
                 android:text="L(l)" />
 
             <ToggleButton
@@ -411,6 +391,7 @@
                 android:layout_width="40pt"
                 android:layout_height="25pt"
                 android:checked="false"
+                android:visibility="gone"
                 android:text="L(2)" />
 
 
@@ -419,8 +400,35 @@
                 android:layout_width="40pt"
                 android:layout_height="25pt"
                 android:layout_weight="1"
+                android:visibility="gone"
                 android:enabled="true"
                 android:text="LED" />
+
+
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+            <Button
+                android:id="@+id/button_start_mqtt_service"
+                android:layout_width="wrap_content"
+                android:layout_height="24pt"
+                android:layout_weight="1"
+                android:text="START SERVER!" />
+
+            <Button
+                android:id="@+id/button_stop_mqtt_service"
+                android:layout_width="wrap_content"
+                android:layout_height="24pt"
+                android:layout_weight="1"
+                android:text="STOP SERVER!" />
 
         </LinearLayout>
 
