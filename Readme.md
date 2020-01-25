@@ -279,9 +279,21 @@ This is used in the current version of the setup
 | Ball Magents | T::A Kugelmagnete 5 6 10 mm N45 Neodym Magnete NdFeB Menge wählbar extrem stark | 4 € | [ebay](https://www.ebay.de/itm/T-A-Kugelmagnete-5-6-10-mm-N45-Neodym-Magnete-NdFeB-Menge-w%C3%A4hlbar-extrem-stark/122187457941?var=422432026780)  |
 
 
+# Alginment
+
+This is a series of video-tutorials on how to turn on the laser and align it such it couples into the chip. 
+
+1. [Set up the Wifi + MQTT connection to the ESP32 controller](https://photos.app.goo.gl/TjQAdN1GitTAGdJx6)
+2. [Align the Laser w.r.t the Bluray-Lens and add the chip](https://photos.app.goo.gl/38ngs7Nezcvy5C727)
+3. [Add the chip again, but this time with a drop of water under the chip, Start the coupling, Move X/Z so that the Bluray lens couples most of the Laser in the chip](https://photos.app.goo.gl/whmX8mbSWBKy2M5X7)
+3. [Align the optics and the cellphone in order to image the chip](https://photos.app.goo.gl/6gV3E8iVcEinvoh68)
+
 
 # Disclaimer
-We are not responsible for anything. If you have any questions, please feel free to file an issue!
+We are not responsible for anything.  If you have any questions, please feel free to file an issue!
+
+# WARNING: 
+High laser power! Make sure you dimm it down a lot or use laser goggles! 
 
 # License
 - Hardware: ***CERN*** Open Hardware License
