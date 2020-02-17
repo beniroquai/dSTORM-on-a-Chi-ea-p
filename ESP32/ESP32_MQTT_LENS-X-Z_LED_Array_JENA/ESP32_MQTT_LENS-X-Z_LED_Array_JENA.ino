@@ -31,7 +31,7 @@ PubSubClient client(espClient);
 
 /*LED GPIO pin*/
 int LED_PIN = 2;
-int LED_ARRAY_PIN = 5;
+int LED_ARRAY_PIN = 18;
 int LED_ARRAY_COUNT = 16;
 
 /*LASER GPIO pin*/
@@ -170,6 +170,9 @@ void setup() {
   strip.setBrightness(50); // Set BRIGHTNESS to about 1/5 (max = 255)
 
 
+  ledson(strip.Color(255,255,255));
+  delay(1000);
+  ledson(strip.Color(0,0,0));
 
 }
 
@@ -186,14 +189,21 @@ void loop() {
   if (is_sofi_x) {
     // move lens in x-direction
     ledcWrite(PWM_CHANNEL_X, lens_x_int - random(-1, 1)*sofi_amplitude_x);
+    // Visualize, that ESP is on!
+    digitalWrite(LED_PIN, HIGH);
     delay(sofi_periode);
+    digitalWrite(LED_PIN, LOW);
+
   }
 
   // if true, we want to vibrate both lenses along z
   if (is_sofi_z) {
     // move lens in z-direction
     ledcWrite(PWM_CHANNEL_Z, lens_z_int - random(-1, 1)*sofi_amplitude_z);
+    digitalWrite(LED_PIN, HIGH);
     delay(sofi_periode);
+    digitalWrite(LED_PIN, LOW);
+
   }
 }
 
@@ -280,6 +290,12 @@ void receivedCallback(char* topic, byte* payload, unsigned int length) {
     Serial.print("Laser Intensity is set to: ");
     Serial.print(laser_int);
     Serial.println();
+
+    int led_int = laser_int/128;
+    ledson(strip.Color(led_int,led_int,led_int));
+    
+
+  
   }
 
 
