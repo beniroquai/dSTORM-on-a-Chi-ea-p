@@ -21,13 +21,21 @@ const char* password = "12345678";
 #define BUFLEN 16
 String localIP;
 String gatewayIP;
-//char MQTT_SERVER[BUFLEN];
-const char* MQTT_SERVER = "192.168.43.88";
-
+#define IS_MQTT_SERVER_EQUALS_ROUTER 1
+#if IS_MQTT_SERVER_EQUALS_ROUTER == 1
+  char MQTT_SERVER[BUFLEN];  
+#else 
+  const char* MQTT_SERVER = "192.168.43.88";
+#endif
 
 /* create an instance of PubSubClient client */
 WiFiClient espClient;
 PubSubClient client(espClient);
+
+
+/* Motor GPOP pin */
+int motorPin_Z[] = {21,4,17,16}; //{4, 12, 14, 5};
+unsigned int highSpeed = 3000;
 
 /*LED GPIO pin*/
 int LED_PIN = 2;
@@ -37,8 +45,8 @@ int LED_ARRAY_COUNT = 16;
 /*LASER GPIO pin*/
 //int LASER_PIN_PLUS = 21;
 //int LASER_PIN_MINUS = 18;
-int LASER_PIN_PLUS = 22;
-int LASER_PIN_MINUS = 23;
+int LASER_PIN_PLUS = 23;// 22;
+int LASER_PIN_MINUS = 34;//23;
 
 /*Lens GPIO pins*/
 int LENS_X_PIN = 26;
@@ -61,7 +69,7 @@ String my_status = "idle";
 
 #define STEPS 200
 
-#define CLIENT_ID "dSTORM_TROMSO";
+#define CLIENT_ID "dSTORM_Jena";
 
 // global switch for vibrating the lenses
 int sofi_periode = 100;  // ms
@@ -73,7 +81,7 @@ int lens_x_int = 0;
 int lens_z_int = 0;
 int laser_int = 0;
 int lens_x_offset = 0;
-int lens_z_offset = 1000;
+int lens_z_offset = 0;//1000;
 
 boolean is_sofi_x = false;
 boolean is_sofi_z = false;
@@ -99,13 +107,9 @@ int PWM_CHANNEL_LASER = 2;
 long lastMsg = 0;
 char msg[20];
 
-// Motor
-int motorPin_Z[] = {4, 12, 14, 5};
-unsigned int highSpeed = 3000;
+
 
 void setup() {
-
-
 
 
   /* set led and laser as output to control led on-off */
@@ -128,8 +132,8 @@ void setup() {
   pinMode(motorPin_Z[2], OUTPUT);
   pinMode(motorPin_Z[3], OUTPUT);
 
-  drive_right(highSpeed, motorPin_Z, 1);
-  drive_left(highSpeed, motorPin_Z, 1);
+  drive_right(highSpeed, motorPin_Z, 50);
+  drive_left(highSpeed, motorPin_Z, 50);
 
 
   // Start the LED Illuminator
@@ -170,21 +174,28 @@ void setup() {
 
   // Connect wifi and assign Server IP
   localIP = WiFi.localIP().toString();
-  gatewayIP = WiFi.gatewayIP().toString();
-  //gatewayIP.toCharArray(MQTT_SERVER, BUFLEN);
+  #if IS_MQTT_SERVER_EQUALS_ROUTER 
+    gatewayIP = WiFi.gatewayIP().toString();
+    gatewayIP.toCharArray(MQTT_SERVER, BUFLEN);
+  #endif
 
+   
   Serial.println("");
   Serial.print("WiFi connected with IP:");
   Serial.println(localIP);
   Serial.print("Default Gateway (MQTT-SERVER):\t");
   Serial.println(MQTT_SERVER);
 
-
   /* configure the MQTT server with IPaddress and port */
   client.setServer(MQTT_SERVER, 1883);
   /* this receivedCallback function will be invoked
     when client received subscribed topic */
   client.setCallback(receivedCallback);
+
+  // test lenses 
+  ledcWrite(PWM_CHANNEL_Z, 5000);
+  ledcWrite(PWM_CHANNEL_X, 5000);
+  delay(500);
 
   //Set the lenses to their offset level
   ledcWrite(PWM_CHANNEL_Z, lens_z_offset);

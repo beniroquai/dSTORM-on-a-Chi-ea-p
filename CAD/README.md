@@ -23,7 +23,9 @@ All ```Iventor``` source files can be found [here](./Nanoscopy-on-the-cheap/Work
 ## 3D Printing 
 All files files in the [STL](./STL) folder can be printed using off-the shelf printers (we have a Prusa 3 MK2) at a layerheight of 0.2mm and 100% infill.
 
+## Preparation: Electronics + Wiring 
 
+For all electronics-related tasks we refer to [this document](https://github.com/beniroquai/dSTORM-on-a-Chi-ea-p/tree/master/ELECTRONICS#lens-wiring).
 
 ## Assembly
 

@@ -3,6 +3,11 @@
 ## CAD Designs
 The mechanical design files can be found in the folder [CAD](./CAD). It's split into ready-to-print ```.STL```-files and modifiable ```.IPT```-files coming from **Autodesk INVENTOR 2019**. 
 
+<p align="center">
+<img src="./IMAGES/cellSTORM_v5_miniElectronics.png" width="700">
+</p>
+
+
 ## Optical Setup
 
 The basic idea follows the graph below. A laser is coupled into a wave-guide using an optical pickup from a Bluray Player (Sony KES400A). The evanescent field on top of the chip excites a fluorescently labelled fluorophore which gets camptured by a microscope sitting right above. 
