@@ -21,7 +21,7 @@ const char* password = "12345678";
 #define BUFLEN 16
 String localIP;
 String gatewayIP;
-#define IS_MQTT_SERVER_EQUALS_ROUTER 1
+#define IS_MQTT_SERVER_EQUALS_ROUTER 0
 #if IS_MQTT_SERVER_EQUALS_ROUTER == 1
   char MQTT_SERVER[BUFLEN];  
 #else 
@@ -47,6 +47,8 @@ int LED_ARRAY_COUNT = 16;
 //int LASER_PIN_MINUS = 18;
 int LASER_PIN_PLUS = 23;// 22;
 int LASER_PIN_MINUS = 34;//23;
+int LASER2_PIN_PLUS = 19;// 22;
+int LASER2_PIN_MINUS = 33;//23;
 
 /*Lens GPIO pins*/
 int LENS_X_PIN = 26;
@@ -60,6 +62,7 @@ String my_status = "idle";
 #define LENS_Z_TOPIC      "lens/right/z"
 #define LENS_VIBRATE      "lens/both/vibrate"
 #define LASER_TOPIC       "laser/red"
+#define LASER_TOPIC_2     "laser/blue"
 #define STEPPER_Z_FWD     "stepper/z/fwd"
 #define STEPPER_Z_BWD     "stepper/z/bwd"
 #define LED_ARRAY_TOPIC   "led/array"
@@ -80,6 +83,7 @@ int sofi_amplitude_z = 0;   // how many steps +/- ?
 int lens_x_int = 0;
 int lens_z_int = 0;
 int laser_int = 0;
+int laser2_int = 0;
 int lens_x_offset = 0;
 int lens_z_offset = 0;//1000;
 
@@ -103,6 +107,9 @@ int PWM_CHANNEL_Z = 1;
 // laser-channel
 int PWM_CHANNEL_LASER = 2;
 
+// laser-channel
+int PWM_CHANNEL_LASER_2 = 3;
+
 // MQTT Stuff
 long lastMsg = 0;
 char msg[20];
@@ -120,7 +127,9 @@ void setup() {
   pinMode(LASER_PIN_MINUS, OUTPUT);
   digitalWrite(LASER_PIN_PLUS, LOW);
   digitalWrite(LASER_PIN_MINUS, LOW);
-
+  digitalWrite(LASER2_PIN_PLUS, LOW);
+  digitalWrite(LASER2_PIN_MINUS, LOW);
+  
   // Visualize, that ESP is on!
   digitalWrite(LED_PIN, HIGH);
   delay(1000);
@@ -155,6 +164,9 @@ void setup() {
   ledcAttachPin(LASER_PIN_PLUS, PWM_CHANNEL_LASER);
   ledcWrite(PWM_CHANNEL_LASER, 0);
 
+  ledcSetup(PWM_CHANNEL_LASER_2, pwm_frequency, pwm_resolution);
+  ledcAttachPin(LASER2_PIN_PLUS, PWM_CHANNEL_LASER_2);
+  ledcWrite(PWM_CHANNEL_LASER_2, 0);
 
   Serial.begin(115200);
   // We start by connecting to a WiFi network
@@ -336,13 +348,15 @@ void receivedCallback(char* topic, byte* payload, unsigned int length) {
     }
   }
 
-  /*
-    // Catch the value for movement of lens in X-direction (right)
-    if (String(topic) == STATE) {
-      String mystate = payload_int;
-      Serial.println("Mystate is: "+mystate);
-    }
-  */
+// Catch the value for movement of lens in X-direction (right)
+  if (String(topic) == LASER_TOPIC_2) {
+    //dacWrite(25, (int)payload_int);
+    laser2_int = abs((int)payload_int);
+    ledcWrite(PWM_CHANNEL_LASER_2, laser2_int);
+    Serial.print("Laser Intensity is set to: ");
+    Serial.print(laser2_int);
+    Serial.println();
+  }
 
   // Catch the value for movement of lens in X-direction (right)
   if (String(topic) == LENS_X_TOPIC) {
@@ -411,6 +425,7 @@ void mqttconnect() {
       client.subscribe(STEPPER_Z_BWD);
       client.subscribe(LENS_X_SOFI);
       client.subscribe(LENS_Z_SOFI);
+      client.subscribe(LASER_TOPIC_2);
       client.subscribe(STATE);
     } else {
       Serial.print("FAILED, status code =");
