@@ -5,11 +5,50 @@ The mechanical design files can be found in the folder [CAD](./CAD). It's split 
 
 ## Optical Setup
 
+### Coupling 
 The basic idea follows the graph below. A laser is coupled into a wave-guide using an optical pickup from a Bluray Player (Sony KES400A). The evanescent field on top of the chip excites a fluorescently labelled fluorophore which gets camptured by a microscope sitting right above. 
 
 <p align="center">
 <img src="./IMAGES/dstorm.jpeg" width="700">
 </p>
+
+### Compound Microscope
+
+The optical setup in cellSTORM is derived from a classical compound (i.e. finite corrected) microscope, where either a camera can image the intermediate image or an eyepiece "relays" it to ~infinity in order to image it with a cellphone whose entrance pupil is inside the exit pupil of the eyepiece:
+
+<p align="center">
+<img src="./IMAGES/SUPP_opticaldesign.png" width="700">
+</p>
+
+The two silver-coated mirrors are used to fold the beam. An additional lid covers everything such there is no straylight. The flexure bearing driven by a (motorized) micrometer pushes the objective lens for precise focusing. 
+I'm 
+
+### Dual Colour Setup
+
+In order to have two different excitation lines, we started thinking about how this could be achieved at-a-budget. When disassembling the optical drive one sees a bunch of different components. Besides the OPU, there are lasers, mirrors, filters and lenses. One of the mirrors is in fact a long-pass dichriomatic mirror which can be used to combine two different laserlines (i.e. green, red). A first test confirms this:
+
+<p align="center">
+<img src="./IMAGES/IMG_20200628_163322.jpg" width="400">
+</p>
+
+We based a multicolour version on this feature and fused two different lasers (e.g. blue, red) with a dichroic mirror (e.g. Comar):
+
+<p align="center">
+<img src="./IMAGES/IMG_20200819_171346.jpg" width="400">
+</p>
+
+A mechanism of a kinematic mirror mounted on 3 ball magnets and a tiltable dichroic mirror helps to bring the two lasers in-line:
+
+<p align="center">
+<img src="./IMAGES/IMG_20200819_171356.jpg" width="400">
+</p>
+
+We provide two different setups, where the left one has two lasers combined using the aforementioned dichroic. The right one is much simpler, since the laser can be slided in and out. Drawback: Additional vibration and effort to mount the laser may lead to disfactory ;-) 
+
+<p align="center">
+<img src="./IMAGES/SUPP_Multicolour.png" width="700">
+</p>
+
 
 
 # Control-System 
@@ -18,9 +57,11 @@ To make it work, you can use your Android cellphone and start an ad-hoc WiFi net
 
 In the latest version of the Android APP, there is no broker necessary, just install it and control the Lens using your cellphone. 
 
-Current configuration:
+Deprecated configuration:
 
 ![](./IMAGES/DSC_0268.JPG)
+
+New one has only one ESP32 and 2 transistors. Contact for help. 
 
 
 ## Remote Controller via the MQTT-protocol
