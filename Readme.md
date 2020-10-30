@@ -100,6 +100,7 @@ Those commands will be send by the Android APP, but can also be send by any othe
 Simply use `Android Studio` to build the latest version from the [Android-Folder](./ANDROID/STORM-Controller).
 
 A prebuilt App can also be downloaded from our [Google Drive](https://drive.google.com/drive/folders/1ZMbA4FLp0GcJbrnLGYNsfIKh4AQO2nTv?usp=sharing). (Might be an older version though).
+Alternatively the relase APP (debug-mode only/non-signed) can be found [here](./ANDROID/STORM-Controller/RELEASE/app-debug.apk).
 
 ## Debugging in Mosquitto
 If you have chosen to use an external MQTT-broker you can use this for debugging the commands. Password of our broker is "password", username is pi.
