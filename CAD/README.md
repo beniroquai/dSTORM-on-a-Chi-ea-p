@@ -20,8 +20,9 @@ All ```Iventor``` source files can be found [here](./Nanoscopy-on-the-cheap/Work
 </p>
 
 
-## 3D Printing 
-All files files in the [STL](./STL) folder can be printed using off-the shelf printers (we have a Prusa 3 MK2) at a layerheight of 0.2mm and 100% infill.
+## 🛠 3D RELEASE files for designing and printing 
+
+All release files for the microscope as shown in the figure above can be found as [design files for Autodesk Inventor 2019](./Nanoscopy-on-the-cheap/Workspace/RELEASE/Autodesk_Inventor_2019) and as 3D printable [STL files](./Nanoscopy-on-the-cheap/Workspace/RELEASE/STL). As a 3D printer, we used Prusa 3 MK2 at a layerheight of 0.2mm and 100% infill with PLA (Prusament, space black) and ABS for the base. 
 
 ## Preparation: Electronics + Wiring 
 
