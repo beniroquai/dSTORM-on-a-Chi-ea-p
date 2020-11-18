@@ -104,13 +104,40 @@ Not working yet: The ESP32 is not recognizing the MQTT Server IP automatically (
 
 
 ## Code for ESP32
-The code for the ESP32's in order to control the motors and LEDS can be found [here](./ESP32/ESP32_MQTT_LENS-X-Z_LED_Array_TROMSO).
-You can conveniently flash it using the [Arduino IDE](www.Arduino.com) with the ESP extension from the internal library installation command.
+The code for the ESP32's in order to control the motors and LEDS can be found [here](./ESP32/ESP32_MQTT_LENS-X-Z_LED_Array_JENA/ESP32_MQTT_LENS-X-Z_LED_Array_JENA.ino).
+You can conveniently flash it using the [Arduino IDE](www.Arduino.com) with the ESP extension from the internal library installation command. For a detailed information on how to install it, please go for example [here](https://github.com/espressif/arduino-esp32#installation-instructions).
+
+## Wiring table
+
+### ESP 
+
+| ESP Pin  | Task  | External Component  | Pin  | Wire? |
+|---|---|---|---|---|
+|23 | LASER_PIN_PLUS | Laser (red) | TTL + | ESP soldered -> Laser Female 0.15mm² |
+|22 | LASER_PIN_MINUS | Laser (red) | TTL - |ESP soldered -> Laser Female 0.15mm² |
+| 19 | LASER2_PIN_MINUS | Laser (green) | TTL + |ESP soldered -> Laser Female 0.15mm² |
+| 33 | LASER2_PIN_MINUS | Laser (green) | TTL - |ESP soldered -> Laser Female 0.15mm² |
+|---|---|---|---|---|
+| 26 | LENS_X_PIN | Lens current signal  (x-direction, left) | Bucket Driver 1 (in 1)  |ESP soldered -> Bucket Driver soldered |
+| 25 | LENS_Z_PIN | Lens current signal  (z-direction, left) | Bucket Driver 1 (in 2) |ESP soldered -> Bucket Driver soldered |
+| X | LENS2_X_PIN | Lens current signal  (x-direction, right) | Bucket Driver 2 (in 1)  |ESP soldered -> Bucket Driver soldered |
+| X | LENS2_Z_PIN | Lens current signal  (z-direction, right) | Bucket Driver 2 (in 2) |ESP soldered -> Bucket Driver soldered |
+
+### Bucket driver for lenses
+
+You can use a simple darlington transistor to "amplify" the PWM signal coming from the ESP32 in order to control the position of the lens. Even though this setup works quiet ok, we experience a problem with oscillating lenses. This is mostly due to the creation of a resonance with the voice-coil and the high frequency of the PWM signal. To come by this, we used a low-cost (LED bucket driver from Sparkfun](https://www.sparkfun.com/products/13705):
+<p align="center">
+<img src="https://cdn.sparkfun.com//assets/parts/1/1/1/8/9/13705-01.jpg" width="300">
+</p>
+
+It has 3 in and outputs which can be used for 3 lens actuator outputs. It needs an external supply voltage (>=6V). Other than that, the wiring is self-explanatory. The in+ is wired to the PWM of the ESP32. It's also important to note, that the GND from both boards need to be connected using a wired connection. 
+
+Each lens (see below) is connected to the out +/- with the two wires from each voice-coil.
 
 
 ## Wiring of the Components 
 
-**LED ARRAY**
+**LED ARRAY (optional)**
 The LED ring is connected to 5V/GND/Pin5 for DATA.
  
 ```
