@@ -122,6 +122,12 @@ You can conveniently flash it using the [Arduino IDE](www.Arduino.com) with the 
 | 25 | LENS_Z_PIN | Lens current signal  (z-direction, left) | Bucket Driver 1 (in 2) |ESP soldered -> Bucket Driver soldered |
 | X | LENS2_X_PIN | Lens current signal  (x-direction, right) | Bucket Driver 2 (in 1)  |ESP soldered -> Bucket Driver soldered |
 | X | LENS2_Z_PIN | Lens current signal  (z-direction, right) | Bucket Driver 2 (in 2) |ESP soldered -> Bucket Driver soldered |
+|---|---|---|---|---|
+| 21 | motorPin_Z 1 | Stepper Motor Pin 1 | ULN2003 (in 1)  |ESP soldered -> ULN2003 soldered |
+| 4 | motorPin_Z 2 | Stepper Motor Pin 2 | ULN2003 (in 2)  |ESP soldered -> ULN2003 soldered |
+| 17 | motorPin_Z 3 | Stepper Motor Pin 3 | ULN2003 (in 3)  |ESP soldered -> ULN2003 soldered |
+| 16 | motorPin_Z 4 | Stepper Motor Pin 4 | ULN2003 (in 4)  |ESP soldered -> ULN2003 soldered |
+
 
 ### Bucket driver for lenses
 
@@ -139,10 +145,18 @@ Each lens (see below) is connected to the out +/- with the two wires from each v
 
 **LED ARRAY (optional)**
 The LED ring is connected to 5V/GND/Pin5 for DATA.
- 
 ```
 int LED_ARRAY_PIN = 5;
 ```
+
+
+**Stepper Motor 28BYJ-48 for Z-focus**
+The stepper driver is defined - according to the wiring suggested above -  as such:
+```
+int motorPin_Z[] = {21,4,17,16}; //{4, 12, 14, 5};
+```
+for more information, you can have a look [here](https://elektro.turanis.de/html/prj143/index.html)
+
 
 **LASER Module**
 The Laser-module's TTL signal is connected to ```+/-``` -> ```21/18``` and controlled through PWM:
