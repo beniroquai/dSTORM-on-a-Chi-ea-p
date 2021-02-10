@@ -1,0 +1,34 @@
+<Presets Version="1">
+  <Preset Name="Simple_None_41.2 mm" ID="f0fd997a-481b-4b6f-8a3c-f8658f3f13a4" MruTime="2020-12-01 13:45:43" MrmTime="2020-12-01 13:44:37">
+    <SeatType Value="IDC_HOLE_DRILL_BTN" />
+    <HoleType Value="IDC_HOLE_SIMPLE_BTN" />
+    <Termination Value="IDC_HOLE_THROUGH_ALL" />
+    <DrillPoint Value="IDC_HOLE_DRILL_ANGLE_BTN" />
+    <FastenerFamily Value="-1" />
+    <FastererType Value="-1" />
+    <FastenerSize Value="-1" />
+    <FastenerFit Value="1" />
+    <ThreadType Value="-1" />
+    <ThreadNomSize Value="-1" />
+    <ThreadPitch Value="-1" />
+    <ThreadClass Value="-1" />
+    <ThreadMajorDiameter Value="0.30 mm" />
+    <ThreadMinorDiameter Value="0.25 mm" />
+    <DirectionType Value="IDC_HOLE_RT_HAND_CTL" />
+    <FullDepth Value="False" />
+    <Direction Value="IDC_HOLE_BACKWARD_DIR_BTN" />
+    <IMate Value="False" />
+    <ExtendStart Value="False" />
+    <ExtendTo Value="True" />
+    <SFDiameter Value="9 mm" />
+    <CBDiameter Value="4 mm" />
+    <CSDiameter Value="4 mm" />
+    <SFHeight Value="2 mm" />
+    <CBHeight Value="2 mm" />
+    <Depth Value="8 mm" />
+    <CSAngle Value="90 deg" />
+    <Diameter Value="41.2 mm" />
+    <ThreadDepth Value="6 mm" />
+    <DrillAngle Value="118 deg" />
+  </Preset>
+</Presets>

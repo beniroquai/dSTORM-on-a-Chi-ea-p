@@ -8,9 +8,21 @@
 #include <PubSubClient.h>
 #include <Stepper.h>
 #include <Adafruit_NeoPixel.h>
+#include <Stepper.h>
+
+
 #ifdef __AVR__
 #include <avr/power.h> // Required for 16 MHz Adafruit Trinket
 #endif
+
+// We want to detect the MQTT Broker by the DNS
+#include <WiFiUdp.h>
+#include <mDNSResolver.h>
+#define MQTT_BROKER_NAME "bene-desktop.local"
+using namespace mDNSResolver;
+WiFiClient espClient;
+WiFiUDP udp;
+Resolver resolver(udp);
 
 /* change it with your ssid-password */
 const char* ssid = "Blynk";
@@ -21,22 +33,26 @@ const char* password = "12345678";
 #define BUFLEN 16
 String localIP;
 String gatewayIP;
-#define IS_MQTT_SERVER_EQUALS_ROUTER 0
+#define IS_MQTT_SERVER_EQUALS_ROUTER 1
+
 #if IS_MQTT_SERVER_EQUALS_ROUTER == 1
-  char MQTT_SERVER[BUFLEN];  
-#else 
-  const char* MQTT_SERVER = "192.168.43.88";
+char MQTT_SERVER[BUFLEN];
+#else
+const char* MQTT_SERVER = "192.168.43.88";
 #endif
 
 /* create an instance of PubSubClient client */
-WiFiClient espClient;
 PubSubClient client(espClient);
 
 
 /* Motor GPOP pin */
-int motorPin_Z[] = {21,4,17,16}; //{4, 12, 14, 5};
-unsigned int highSpeed = 3000;
+// Define number of steps per rotation:
+const int stepsPerRevolution = 2048;
+// Create stepper object called 'myStepper', note the pin order:
+Stepper motor_z = Stepper(stepsPerRevolution, 21, 17, 4, 16);
+unsigned int motor_speed = 8;
 
+ 
 /*LED GPIO pin*/
 int LED_PIN = 2;
 int LED_ARRAY_PIN = 18;
@@ -129,23 +145,20 @@ void setup() {
   digitalWrite(LASER_PIN_MINUS, LOW);
   digitalWrite(LASER2_PIN_PLUS, LOW);
   digitalWrite(LASER2_PIN_MINUS, LOW);
-  
+
   // Visualize, that ESP is on!
   digitalWrite(LED_PIN, HIGH);
   delay(1000);
   digitalWrite(LED_PIN, LOW);
-  // Move Motor back/forth
-    // MOTOR
-  pinMode(motorPin_Z[0], OUTPUT);
-  pinMode(motorPin_Z[1], OUTPUT);
-  pinMode(motorPin_Z[2], OUTPUT);
-  pinMode(motorPin_Z[3], OUTPUT);
-
-  drive_right(highSpeed, motorPin_Z, 50);
-  drive_left(highSpeed, motorPin_Z, 50);
 
 
-  // Start the LED Illuminator
+  // Set the speed of the motor:
+  motor_z.setSpeed(motor_speed);
+  // Set the speed to 5 rpm:  
+  motor_z.step(50);
+  motor_z.step(-50);
+ 
+   // Start the LED Illuminator
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();            // Turn OFF all pixels ASAP
   strip.setBrightness(50); // Set BRIGHTNESS to about 1/5 (max = 255)
@@ -174,8 +187,9 @@ void setup() {
   Serial.print("Connecting to ");
   Serial.println(ssid);
 
+  WiFi.disconnect();
+  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
-
 
   // Connect to Wifi
   while (WiFi.status() != WL_CONNECTED) {
@@ -186,25 +200,32 @@ void setup() {
 
   // Connect wifi and assign Server IP
   localIP = WiFi.localIP().toString();
-  #if IS_MQTT_SERVER_EQUALS_ROUTER 
-    gatewayIP = WiFi.gatewayIP().toString();
-    gatewayIP.toCharArray(MQTT_SERVER, BUFLEN);
-  #endif
+#if IS_MQTT_SERVER_EQUALS_ROUTER
+  gatewayIP = WiFi.gatewayIP().toString();
+  gatewayIP.toCharArray(MQTT_SERVER, BUFLEN);
+  client.setServer(MQTT_SERVER, 1883);
+#else
+  // finding IP from MQTT Broker by dns lookup
+  Serial.print("Resolving ");
+  Serial.println(MQTT_BROKER_NAME);
+  resolver.setLocalIP(WiFi.localIP());
+  IPAddress ip = resolver.search(MQTT_BROKER_NAME);
+  /* configure the MQTT server with IPaddress and port */
+  client.setServer(ip, 1883);
+#endif
 
-   
+
   Serial.println("");
   Serial.print("WiFi connected with IP:");
   Serial.println(localIP);
   Serial.print("Default Gateway (MQTT-SERVER):\t");
   Serial.println(MQTT_SERVER);
 
-  /* configure the MQTT server with IPaddress and port */
-  client.setServer(MQTT_SERVER, 1883);
   /* this receivedCallback function will be invoked
     when client received subscribed topic */
   client.setCallback(receivedCallback);
 
-  // test lenses 
+  // test lenses
   ledcWrite(PWM_CHANNEL_Z, 5000);
   ledcWrite(PWM_CHANNEL_X, 5000);
   delay(500);
@@ -348,7 +369,7 @@ void receivedCallback(char* topic, byte* payload, unsigned int length) {
     }
   }
 
-// Catch the value for movement of lens in X-direction (right)
+  // Catch the value for movement of lens in X-direction (right)
   if (String(topic) == LASER_TOPIC_2) {
     //dacWrite(25, (int)payload_int);
     laser2_int = abs((int)payload_int);
@@ -382,22 +403,20 @@ void receivedCallback(char* topic, byte* payload, unsigned int length) {
   // Catch the value for stepment of lens in X-direction
   if (String(topic) == STEPPER_Z_FWD) {
     // Drive motor X in positive direction
-    drive_left(highSpeed, motorPin_Z, (int)payload_int);
-    stop(motorPin_Z);
-    //STP_X.step((int)payload_int*10);
+    int mysteps = (int)payload_int*10;
+    motor_z.step(mysteps);
     Serial.print("Motor is running in x for: ");
-    Serial.print((int)payload_int);
+    Serial.print(mysteps);
     Serial.println();
   }
 
   // Catch the value for stepment of lens in Y-direction
   if (String(topic) == STEPPER_Z_BWD) {
     // Drive motor X in positive direction
-    drive_right(highSpeed, motorPin_Z, (int)payload_int);
-    stop(motorPin_Z);
-    //    STP_X.step(-(int)payload_int*10);
+    int mysteps = -(int)payload_int*10;
+    motor_z.step(mysteps);
     Serial.print("Motor is running in x for: ");
-    Serial.print((int)payload_int);
+    Serial.print(mysteps);
     Serial.println();
   }
 
@@ -453,157 +472,4 @@ void ledson(uint32_t color) {
     strip.setPixelColor(i, color);         //  Set pixel's color (in RAM)
     strip.show();                          //  Update strip to match
   }
-}
-
-
-
-
-
-void drive_right(unsigned int motorSpeed, int motorPin[], int steps)
-{ // 1
-
-  int motorPin1 = motorPin[0];
-  int motorPin2 = motorPin[1];
-  int motorPin3 = motorPin[2];
-  int motorPin4 = motorPin[3];
-
-  for (int i = 0; i < steps; i++)
-  {
-    digitalWrite(motorPin4, HIGH);
-    digitalWrite(motorPin3, LOW);
-    digitalWrite(motorPin2, LOW);
-    digitalWrite(motorPin1, LOW);
-    delayMicroseconds(motorSpeed);
-
-    // 2
-    digitalWrite(motorPin4, HIGH);
-    digitalWrite(motorPin3, HIGH);
-    digitalWrite(motorPin2, LOW);
-    digitalWrite(motorPin1, LOW);
-    delayMicroseconds(motorSpeed);
-
-    // 3
-    digitalWrite(motorPin4, LOW);
-    digitalWrite(motorPin3, HIGH);
-    digitalWrite(motorPin2, LOW);
-    digitalWrite(motorPin1, LOW);
-    delayMicroseconds(motorSpeed);
-
-    // 4
-    digitalWrite(motorPin4, LOW);
-    digitalWrite(motorPin3, HIGH);
-    digitalWrite(motorPin2, HIGH);
-    digitalWrite(motorPin1, LOW);
-    delayMicroseconds(motorSpeed);
-
-    // 5
-    digitalWrite(motorPin4, LOW);
-    digitalWrite(motorPin3, LOW);
-    digitalWrite(motorPin2, HIGH);
-    digitalWrite(motorPin1, LOW);
-    delayMicroseconds(motorSpeed);
-
-    // 6
-    digitalWrite(motorPin4, LOW);
-    digitalWrite(motorPin3, LOW);
-    digitalWrite(motorPin2, HIGH);
-    digitalWrite(motorPin1, HIGH);
-    delayMicroseconds(motorSpeed);
-
-    // 7
-    digitalWrite(motorPin4, LOW);
-    digitalWrite(motorPin3, LOW);
-    digitalWrite(motorPin2, LOW);
-    digitalWrite(motorPin1, HIGH);
-    delayMicroseconds(motorSpeed);
-
-    // 8
-    digitalWrite(motorPin4, HIGH);
-    digitalWrite(motorPin3, LOW);
-    digitalWrite(motorPin2, LOW);
-    digitalWrite(motorPin1, HIGH);
-    delayMicroseconds(motorSpeed);
-  }
-}
-
-void drive_left(unsigned int motorSpeed, int motorPin[], int steps)
-{ // 1
-
-  int motorPin1 = motorPin[0];
-  int motorPin2 = motorPin[1];
-  int motorPin3 = motorPin[2];
-  int motorPin4 = motorPin[3];
-
-  for (int i = 0; i < steps; i++)
-  {
-    // 1
-    digitalWrite(motorPin1, HIGH);
-    digitalWrite(motorPin2, LOW);
-    digitalWrite(motorPin3, LOW);
-    digitalWrite(motorPin4, LOW);
-    delayMicroseconds(motorSpeed);
-
-    // 2
-    digitalWrite(motorPin1, HIGH);
-    digitalWrite(motorPin2, HIGH);
-    digitalWrite(motorPin3, LOW);
-    digitalWrite(motorPin4, LOW);
-    delayMicroseconds(motorSpeed);
-
-    // 3
-    digitalWrite(motorPin1, LOW);
-    digitalWrite(motorPin2, HIGH);
-    digitalWrite(motorPin3, LOW);
-    digitalWrite(motorPin4, LOW);
-    delayMicroseconds(motorSpeed);
-
-    // 4
-    digitalWrite(motorPin1, LOW);
-    digitalWrite(motorPin2, HIGH);
-    digitalWrite(motorPin3, HIGH);
-    digitalWrite(motorPin4, LOW);
-    delayMicroseconds(motorSpeed);
-
-    // 5
-    digitalWrite(motorPin1, LOW);
-    digitalWrite(motorPin2, LOW);
-    digitalWrite(motorPin3, HIGH);
-    digitalWrite(motorPin4, LOW);
-    delayMicroseconds(motorSpeed);
-
-    // 6
-    digitalWrite(motorPin1, LOW);
-    digitalWrite(motorPin2, LOW);
-    digitalWrite(motorPin3, HIGH);
-    digitalWrite(motorPin4, HIGH);
-    delayMicroseconds(motorSpeed);
-
-    // 7
-    digitalWrite(motorPin1, LOW);
-    digitalWrite(motorPin2, LOW);
-    digitalWrite(motorPin3, LOW);
-    digitalWrite(motorPin4, HIGH);
-    delayMicroseconds(motorSpeed);
-
-    // 8
-    digitalWrite(motorPin1, HIGH);
-    digitalWrite(motorPin2, LOW);
-    digitalWrite(motorPin3, LOW);
-    digitalWrite(motorPin4, HIGH);
-    delayMicroseconds(motorSpeed);
-  }
-}
-
-
-void stop(int motorPin[])
-{
-  int motorPin1 = motorPin[0];
-  int motorPin2 = motorPin[1];
-  int motorPin3 = motorPin[2];
-  int motorPin4 = motorPin[3];
-
-  digitalWrite(motorPin4, LOW);
-  digitalWrite(motorPin3, LOW);
-  digitalWrite(motorPin2, LOW);
-  digitalWrite(motorPin1, LOW);
 }
