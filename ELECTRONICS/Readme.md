@@ -28,6 +28,25 @@ Current configuration:
 ![](./IMAGES/DSC_0268.JPG)
 
 
+## Remote Controller via an old PS3 Gamepad
+
+Everything for the Gamepad (Code) you can find here: https://github.com/beniroquai/dSTORM-on-a-Chi-ea-p/blob/master/ELECTRONICS/ESP32/ESP32_PS3_LENS-X-Z_LED_Array_JENA/ESP32_PS3_LENS-X-Z_LED_Array_JENA.ino
+
+
+You would need to find out the Bluetooth MAC Address for your controller. That'S quite simple with this tutorial: https://techtutorialsx.com/2020/02/16/esp32-connecting-a-ps3-controller/
+
+<p align="center">
+<img src="./images/PS3PAD.png" width="400" alt="">
+</p>
+
+## Remote Controller via a Jupyter Notebook 
+
+
+./PYTHON/ESP32_lenslaser/ESP32_lenslaser.ino
+./PYTHON/ESP32_lenslaser/test_esp32_lenslaser.py
+
+
+
 ## Remote Controller via the MQTT-protocol
 
 This is the Android Remote Control for the ***STORMimager*** based on this [repository](https://github.com/ismenc/esp8266-mqtt-control) combined with an "Moquette" MQTT broker.
