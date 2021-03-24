@@ -210,6 +210,7 @@ The lens from the KES-400A Bluray player (Older Playstation 3 drive) looks as fo
 <img src="./IMAGES/Lens_Soldering_setup.png" width="700">
 </p>
 
+***ATTENTION:*** Don't solder the wires to the metal frame! You will shortcut the output of the buckdriver!
 
 # SOFTWARE
 
