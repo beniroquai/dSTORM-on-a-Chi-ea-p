@@ -25,7 +25,23 @@ In the latest version of the Android APP, there is no broker necessary, just ins
 
 Current configuration:
 
-![](./IMAGES/DSC_0268.JPG)
+![](./IMAGES/MQTT_GUI.png)
+
+
+## Remote Controller via Jupyter Notebook
+
+1. Open the folder [ESP32_lenslaser_jupyternotebook](./PYTHON/ESP32_lenslaser_jupyternotebook) and start a Jupyter Notebook Server inside the folder by hitting `jupyter notebook` in the command prompt/terminal
+2. All necessary library files for the control of the laser/lenses are in the very folder 
+3. Go through the notbook `Notebook_Movelens_v0.ipynb` and try out what happens if you use the sliders
+
+#### Possible errors
+
+- serial port: change it as it is listed for example in the arduino IDE 
+- serial doen't work? Do not use conda
+
+<p align="center">
+<img src="./IMAGES/NotebookPyserial.png" width="400" alt="">
+</p>
 
 
 ## Remote Controller via an old PS3 Gamepad
@@ -36,7 +52,7 @@ Everything for the Gamepad (Code) you can find here: https://github.com/beniroqu
 You would need to find out the Bluetooth MAC Address for your controller. That'S quite simple with this tutorial: https://techtutorialsx.com/2020/02/16/esp32-connecting-a-ps3-controller/
 
 <p align="center">
-<img src="./images/PS3PAD.png" width="400" alt="">
+<img src="./IMAGES/PS3PAD.png" width="400" alt="">
 </p>
 
 ## Remote Controller via a Jupyter Notebook 
