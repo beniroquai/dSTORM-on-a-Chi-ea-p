@@ -1,3 +1,4 @@
+
 /* Here ESP32 will keep 2 roles:
   1/ read data from DHT11/DHT22 sensor
   2/ control led on-off
